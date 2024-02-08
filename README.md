@@ -1,4 +1,4 @@
-# Cahier des charges
+# SIAM 2024 - Cahier des charges
 En qualité d’assistant ingénieur développement, vous êtes chargé de concevoir et réaliser via un site web dynamique qui permet de créer, rejoindre et jouer des parties du jeu de société Siam.
 
 ## Fonctionnement de l'application
