@@ -39,7 +39,7 @@ vous devrez gérer une table des parties. Modéliser le plateau de jeu pour stoc
 **Il faut bien sûr tester les conditions de victoire et détecter la fin de partie!**
 
 ### pour aller plus loin: ajax
-plutôt que recharger la page lorsqu'on sélectionne une pièce à déplacer, on pourra demander au serveur la liste des cases possibles en ajax, de manière à proposer les cases de destination possibles sans rechargement (donc modification des zones de sélection en javascript).
+Plutôt que recharger la page lorsqu'on sélectionne une pièce à déplacer, on pourra demander au serveur la liste des cases possibles en ajax, de manière à proposer les cases de destination possibles sans rechargement (donc modification des zones de sélection en javascript).
 
 ## Contraintes techniques
 
@@ -51,30 +51,26 @@ __L'application 3-tiers devra utiliser les technologies suivantes__  :
 
 Toute utilisation d'une bibliothèque/API/framework annexe devra être validée au préalable par l'enseignant (ou si vous voulez gagner du temps: la réponse est non)
 
-D'un point de vue sécurité, toute injection de code trop aisée sera sévèrement sanctionnée.
+D'un point de vue sécurité, __toute injection de code trop aisée sera sévèrement sanctionnée__.
 
 Les projets doivent pouvoir fonctionner sur les machines des salles TP (en php7).
-Annexe 1. règles du jeu et ressources graphiques
-
-Cf zip sur Moodle
-Annexe 2. Fiches de test
-
-Cf document instructions_fiche_de_test.pdf sur Moodle
-Annexe 3. Infos pratiques
+Annexe 1. règles du jeu et ressources graphiques Cf zip sur Moodle
+Annexe 2. Fiches de test Cf document instructions_fiche_de_test.pdf sur Moodle
+Annexe 3. **Infos pratiques**
 - Projet à réaliser en binôme, sauf autorisation explicite
 choisir un groupe SAE pour la composition du binôme sur Moodle avant le 12 février 2024
 - Date de rendu du modèle de données : **26 février 2024**
 - Date de rendu du projet : **18 mars 2024**
 
-1. sur gitlab.univ-artois.fr
-un des étudiants crée le projet, invite ses camarades, et le responsable de l’unité
+1. Sur gitlab.univ-artois.fr
+Un des étudiants crée le projet, invite ses camarades, et le responsable de l’unité
 - code source (fichiers html, js, img, php, etc, organisés de façon efficiente)
 - base de données sqlite
 
-2. sur Moodle
-- rapport technique pour le groupe (ne pas oublier les identifiants adm!)
-- fiches de tests de l’application
-- portfolio individuel (partie prise en charge, difficultés rencontrées, communication avec le binôme, si c'était à refaire?)
+2. Sur Moodle
+- Rapport technique pour le groupe (ne pas oublier les identifiants adm!)
+- Fiches de tests de l’application
+- Portfolio individuel (partie prise en charge, difficultés rencontrées, communication avec le binôme, si c'était à refaire?)
 
 Changelog
 - v1.0 – version initiale
