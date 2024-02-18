@@ -2,7 +2,7 @@
 En qualité d’assistant ingénieur développement, vous êtes chargé de concevoir et réaliser via un site web dynamique qui permet de créer, rejoindre et jouer des parties du jeu de société Siam.
 
 ## Fonctionnement de l'application
-### Authentification
+### 1. Authentification
 Vous devrez gérer une table des utilisateurs qui contient au départ au moins un administrateur. Les mots de passe ne sont pas stockés en clair.
 
 **Un utilisateur (administrateur ou joueur) doit pouvoir** : 
