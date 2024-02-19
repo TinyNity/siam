@@ -37,17 +37,21 @@ class DbInterface {
         return self::$instance;
     }
 
-    public function checkUserExistence(String $username){
+    public function checkUserExistence(String $username) : bool{
         $db = new SQLite3("./db.sqlite");
-        $query = ("
+        $query = $db->query("
             SELECT username FROM users c
             WHERE EXISTS (
                     SELECT 1 FROM users
-                    WHERE username = c.username )
+                    WHERE $username = c.username )
         ");
+        if (!$query) {
+            return false;
+        }
+        return true;
     }
 
-    public function registerPlayer(String $username, String $password, boolean $admin = 0) : boolean {
+    public function registerAccount(String $username, String $password, bool $admin = 0) : bool {
         $db = new SQLite3("./db.sqlite");
         if (checkUserExistence($username)) { //? User is in database, can't create a new account with the same username
             return false;

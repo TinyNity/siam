@@ -17,7 +17,7 @@ if (isset($_POST['registerForm'])) {
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    registerPlayer($username, $password);
+    registerAccount($username, $password);
     redirect("./login.php");
 
     // if ($result) {
