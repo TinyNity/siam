@@ -13,9 +13,7 @@
     <body>
         <table class="board-container">
             <tr>
-                <td id="cell-0-0">
-                    <img src="" id="image-0-0">
-                </td>
+                <td id="cell-0-0"></td>
                 <td id="cell-0-1"></td>
                 <td id="cell-0-2"></td>
                 <td id="cell-0-3"></td>

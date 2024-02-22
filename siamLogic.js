@@ -27,11 +27,17 @@ class Siam{
         this.gameboard=[];
     }
 
+    /* Function to initialize a gameboard */
     init(){
         for (let i=0;i<BOARD_SIZE;i++){
             this.gameboard.push([]);
             for (let j=0;j<BOARD_SIZE;j++){
                 this.gameboard[i].push(new Cell(Piece.VOID,Rotation.UP,null));
+                var tableCell=document.getElementById(`cell-${i}-${j}`);    //Create a blank img element for each cell
+                var img= document.createElement('img');
+                img.src='';
+                img.id=`image-${i}-${j}`;
+                tableCell.appendChild(img);
             }
         }
         this.gameboard[2][1].piece=Piece.ROCK;
@@ -39,18 +45,44 @@ class Siam{
         this.gameboard[2][3].piece=Piece.ROCK;
     }
 
+    /*Functio to change an image*/
+
+    setImage(img,piece,rotation){
+        switch (piece) {
+            case Piece.VOID:
+                img.src='';
+                break;
+            case Piece.ROCK:
+                img.src='assets/rocher.gif'
+                break;
+            case Piece.ELEPHANT:
+                img.src=`assets/elephant${rotation}.gif`
+                break;
+            case Piece.RHINOCEROS:
+                img.src=`assets/rhinoceros${rotation}.gif`
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /*Function to change the board in the page*/
     renderBoard(){
         for (let i=0;i<BOARD_SIZE;i++){
             for (let j=0;j<BOARD_SIZE;j++){
-                tableCell=document.getElementById(`cell-${i}-${j}`);
-                tableCell.textContent=`${this.plateau[i][j].piece}`;
+                var img = document.getElementById( `image-${i}-${j}`)
+                this.setImage(img,this.gameboard[i][j].piece,this.gameboard[i][j].rotation);
             }
         }
     }
 }
 
+
+
+var jeu=new Siam();
+
 function main(){
-    jeu=new Siam();
     jeu.init();
     jeu.renderBoard();
 }
