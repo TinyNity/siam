@@ -20,8 +20,13 @@ h1 {
 .board-container td {
     width: calc(100%/5);
     height: calc(100%/5);
+    text-align: center;
 }
 
+.board-container img {
+    display: block;
+    margin: auto; 
+}
 
 
 fieldset, form {
