@@ -14,7 +14,7 @@ Redirections :
  Redirections :   
      - login.php  
 
-e## - `dbInterface.php`
+## - `dbInterface.php`
 
 ### Used to interface with the database(s)
 

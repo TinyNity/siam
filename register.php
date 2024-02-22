@@ -16,8 +16,9 @@ function redirect(string $url, int $statusCode = 303) { // Redirect HTTP code
 if (isset($_POST['registerForm'])) {
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    registerAccount($username, $password);
+    $dbInterface = $dbInterface::getInstance();
+    $dbInterface->registerAccount($username, $password);
+    
     redirect("./login.php");
 
     // if ($result) {
@@ -66,8 +67,8 @@ if (isset($_POST['registerForm'])) {
             <input type="text" maxlength="32" id="username" name="username" required /><br>
             <label for="password">Password : </label>
             <input type="password" id="password" name="password" required /><br>
-            <label for="password">Re-enter your password : </label>
-            <input type="password" id="password" name="password2" required /><br>
+            <label for="password2">Re-enter your password : </label>
+            <input type="password" id="password2" name="password2" required /><br>
 
             <input class="btn" type="submit" value="enter" name="registerForm">
         </form>
