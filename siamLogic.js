@@ -25,6 +25,16 @@ class Cell{
         this.x=x;
         this.y=y;
     }
+
+    move(x,y){
+        return new Cell(this.piece,this.rotation,this.player,x,y);
+    }
+
+
+    /* Function to create a void cell at the same position of the cell */
+    void(){
+        return new Cell(Piece.VOID,Rotation.UP,null,this.x,this.y);
+    }
 }
 
 class Siam{
@@ -52,13 +62,11 @@ class Siam{
         this.gameboard[2][3].piece=Piece.ROCK;
     }
 
-    /* Function to swap to cells in the array */
+    /* Function to move cells in the array */
 
     moveCell(cellDest){
-        this.gameboard[selectedCell.x][selectedCell.y]= new Cell(Piece.VOID,Rotation.UP,null,selectedCell.x,selectedCell.y);
-        this.gameboard[cellDest.x][cellDest.y]= selectedCell;
-        selectedCell.x=cellDest.x;
-        selectedCell.y=cellDest.y;
+        this.gameboard[selectedCell.x][selectedCell.y]= selectedCell.void();
+        this.gameboard[cellDest.x][cellDest.y]= selectedCell.move(cellDest.x,cellDest.y);
     }
 
 
@@ -83,7 +91,7 @@ class Siam{
     }
 
 
-    /*Function to change the board in the page*/
+    /*Function to render the board in the page*/
     renderBoard(){
         for (let i=0;i<BOARD_SIZE;i++){
             for (let j=0;j<BOARD_SIZE;j++){
@@ -110,13 +118,13 @@ function main(){
             let row=cell.getAttribute('data-row');
             let col=cell.getAttribute('data-col');
             let currentCell=jeu.gameboard[row][col];
-            if (selectedCell==null && currentCell.piece!=Piece.VOID){
-                selectedCell=currentCell;
-            }
-            else {
+            if (selectedCell!=null && currentCell.piece==Piece.VOID){
                 jeu.moveCell(currentCell);
                 jeu.renderBoard();
                 selectedCell=null;
+            }
+            else if (selectedCell==null && currentCell.piece!=Piece.VOID){
+                selectedCell=currentCell;
             }
         })
     })
