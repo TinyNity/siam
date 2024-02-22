@@ -51,7 +51,7 @@ class DbInterface {
         return true;
     }
 
-    public function registerAccount(String $username, String $password, bool $admin = 0) : bool {
+    public function registerAccount(String $username, String $password, bool $admin = false) : bool {
         $db = new SQLite3("./db.sqlite");
         if ($this->checkUserExistence($username)) { //? User is in database, can't create a new account with the same username
             return false;

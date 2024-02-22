@@ -16,7 +16,7 @@ function redirect(string $url, int $statusCode = 303) { // Redirect HTTP code
 if (isset($_POST['registerForm'])) {
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $dbInterface = $dbInterface::getInstance();
+    $dbInterface = DBInterface::getInstance();
     $dbInterface->registerAccount($username, $password);
     
     redirect("./login.php");
