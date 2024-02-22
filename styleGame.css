@@ -17,13 +17,13 @@ h1 {
     table-layout: fixed;
 }
 
-.board-container td {
+.cell {
     width: calc(100%/5);
     height: calc(100%/5);
     text-align: center;
 }
 
-.board-container img {
+.piece {
     display: block;
     margin: auto; 
 }

@@ -13,39 +13,39 @@
     <body>
         <table class="board-container">
             <tr>
-                <td id="cell-0-0"></td>
-                <td id="cell-0-1"></td>
-                <td id="cell-0-2"></td>
-                <td id="cell-0-3"></td>
-                <td id="cell-0-4"></td>    
+                <td id="cell-0-0" class="cell"></td>
+                <td id="cell-0-1" class="cell"></td>
+                <td id="cell-0-2" class="cell"></td>
+                <td id="cell-0-3" class="cell"></td>
+                <td id="cell-0-4" class="cell"></td>    
             </tr>
             <tr>
-                <td id="cell-1-0"></td>
-                <td id="cell-1-1"></td>
-                <td id="cell-1-2"></td>
-                <td id="cell-1-3"></td>
-                <td id="cell-1-4"></td>    
+                <td id="cell-1-0" class="cell"></td>
+                <td id="cell-1-1" class="cell"></td>
+                <td id="cell-1-2" class="cell"></td>
+                <td id="cell-1-3" class="cell"></td>
+                <td id="cell-1-4" class="cell"></td>    
             </tr>
             <tr>
-                <td id="cell-2-0"></td>
-                <td id="cell-2-1"></td>
-                <td id="cell-2-2"></td>
-                <td id="cell-2-3"></td>
-                <td id="cell-2-4"></td>    
+                <td id="cell-2-0" class="cell"></td>
+                <td id="cell-2-1" class="cell"></td>
+                <td id="cell-2-2" class="cell"></td>
+                <td id="cell-2-3" class="cell"></td>
+                <td id="cell-2-4" class="cell"></td>    
             </tr>
             <tr>
-                <td id="cell-3-0"></td>
-                <td id="cell-3-1"></td>
-                <td id="cell-3-2"></td>
-                <td id="cell-3-3"></td>
-                <td id="cell-3-4"></td>    
+                <td id="cell-3-0" class="cell"></td>
+                <td id="cell-3-1" class="cell"></td>
+                <td id="cell-3-2" class="cell"></td>
+                <td id="cell-3-3" class="cell"></td>
+                <td id="cell-3-4" class="cell"></td>    
             </tr>
             <tr>
-                <td id="cell-4-0"></td>
-                <td id="cell-4-1"></td>
-                <td id="cell-4-2"></td>
-                <td id="cell-4-3"></td>
-                <td id="cell-4-4"></td>    
+                <td id="cell-4-0" class="cell"></td>
+                <td id="cell-4-1" class="cell"></td>
+                <td id="cell-4-2" class="cell"></td>
+                <td id="cell-4-3" class="cell"></td>
+                <td id="cell-4-4" class="cell"></td>    
             </tr>
         </table>
 
