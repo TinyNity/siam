@@ -103,6 +103,19 @@ class Siam{
     }
 }
 
+function tryMovePiece(cell){
+    let row=cell.getAttribute('data-row');
+    let col=cell.getAttribute('data-col');
+    let currentCell=jeu.gameboard[row][col];
+    if (selectedCell!=null && currentCell.piece==Piece.VOID){
+        jeu.moveCell(currentCell);
+        jeu.renderBoard();
+        selectedCell=null;
+    }
+    else if (selectedCell==null && currentCell.piece!=Piece.VOID){
+        selectedCell=currentCell;
+    }
+}
 
 
 var jeu=new Siam();
@@ -114,19 +127,7 @@ function main(){
     const cells=document.querySelectorAll('.cell');
 
     cells.forEach(cell=>{
-        cell.addEventListener('click',function(){
-            let row=cell.getAttribute('data-row');
-            let col=cell.getAttribute('data-col');
-            let currentCell=jeu.gameboard[row][col];
-            if (selectedCell!=null && currentCell.piece==Piece.VOID){
-                jeu.moveCell(currentCell);
-                jeu.renderBoard();
-                selectedCell=null;
-            }
-            else if (selectedCell==null && currentCell.piece!=Piece.VOID){
-                selectedCell=currentCell;
-            }
-        })
+        cell.addEventListener('click',tryMovePiece.bind(null,cell))
     })
 }
 
