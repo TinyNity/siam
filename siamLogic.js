@@ -1,8 +1,7 @@
 const BOARD_SIZE=5;
 var selectedCell=null;
 
-
-// DATABASE NEED TO STORE THE SAME VALUE FOR ROTATION AND PIECE AS THE VALUES IN THIS SCRIPT
+//! DATABASE NEEDS TO STORE THE SAME VALUE FOR ROTATION AND PIECE LIKE THE VALUES IN THIS SCRIPT
 class Rotation{
     static UP=0;
     static RIGHT=1;
@@ -31,7 +30,7 @@ class Cell{
     }
 
 
-    /* Function to create a void cell at the same position of the cell */
+    //? Function to create a void cell at the same position of the cell
     void(){
         return new Cell(Piece.VOID,Rotation.UP,null,this.x,this.y);
     }
@@ -42,7 +41,7 @@ class Siam{
         this.gameboard=[];
     }
 
-    /* Function to initialize a gameboard */
+    //? Function to initialize a gameboard
     init(){
         for (let i=0;i<BOARD_SIZE;i++){
             this.gameboard.push([]);
@@ -62,7 +61,7 @@ class Siam{
         this.gameboard[2][3].piece=Piece.ROCK;
     }
 
-    /* Function to move cells in the array */
+    //? Function to move cells in the array
 
     moveCell(cellDest){
         this.gameboard[selectedCell.x][selectedCell.y]= selectedCell.void();
@@ -70,7 +69,7 @@ class Siam{
     }
 
 
-    /*Function to change an image*/
+    //? Function to change an image
     setImage(img,piece,rotation){
         switch (piece) {
             case Piece.VOID:
@@ -91,7 +90,7 @@ class Siam{
     }
 
 
-    /*Function to render the board in the page*/
+    //? Function to render the board in the page
     renderBoard(){
         for (let i=0;i<BOARD_SIZE;i++){
             for (let j=0;j<BOARD_SIZE;j++){
@@ -117,10 +116,9 @@ function tryMovePiece(cell){
     }
 }
 
-
 var jeu=new Siam();
 
-function main(){
+document.addEventListener("DOMContentLoaded", () => {
     jeu.init();
     jeu.renderBoard();
 
@@ -129,6 +127,4 @@ function main(){
     cells.forEach(cell=>{
         cell.addEventListener('click',tryMovePiece.bind(null,cell))
     })
-}
-
-document.addEventListener("DOMContentLoaded",main);
+});

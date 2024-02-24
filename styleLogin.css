@@ -22,10 +22,16 @@ h1 {
     font-size: 76pt;
     color:rgb(197, 170, 255);
 }
+
+h2 {
+    text-align: center;
+}
 #formDiv {
     border: 1px solid rgba(197, 170, 255, 0.409);
     padding: 50px;
-    margin:20%;
+    margin-top:8%;
+    margin-right:20%;
+    margin-left:20%;
 }
 
 label {
@@ -39,11 +45,11 @@ label {
     margin-top: 50px;
     display: inline-block;
     padding: 40px;
-    transition: all 250ms;
+    transition: all 50ms;
     border-radius: 6px;
     font-variant: small-caps;
 }
 
 .btn:hover {
-    transform: scale(1.2);
+    transform:translateY(4px);
 }

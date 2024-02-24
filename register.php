@@ -14,19 +14,17 @@ function redirect(string $url, int $statusCode = 303) { // Redirect HTTP code
 
 
 if (isset($_POST['registerForm'])) {
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $dbInterface = DBInterface::getInstance();
-    $dbInterface->registerAccount($username, $password);
-    
-    redirect("./login.php");
+    if (!$_POST['password'] == $_POST['password2']) {
 
-    // if ($result) {
-    //     $message = 'Inscription réussie!';
-    //     header('Location: login.php');
-    // } else {
-    //     $message = 'Erreur lors de l\'inscription.';
-    // }
+        die();
+        //TODO Putain de check si p1== p2
+    }
+    $data = [];
+    $data[] = "register";
+    $data[] = $_POST['username'];
+    $data[] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    setcookie("user", json_encode($data), EXPIRYDATE);
+    //redirect("./auth.php");
 }
 
 ?>
@@ -36,11 +34,27 @@ if (isset($_POST['registerForm'])) {
     <meta charset="UTF-8">
     <link rel="stylesheet" href="styleLogin.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer>
+        document.addEventListener("load", () => {
+            let form = document.getElementById('registerForm');
+            console.log(form.elements["password"].value + ", " + form.elements["password2"].value);
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                let p1 = form.elements["password"].value;
+                let p2 = form.elements["password2"].value;
+                console.log(p1 + ", " + p2);
+                if (p1 == p2) {
+                    alert("[-] The passwords don't match !"); 
+                    window.location.reload(false);
+                }
+            });
+        })
+    </script>
     <title>SIAM - Register</title>
 </head>
 
 <body>
-    <h1>Welcome</h1> <hr>
+    <h1>Siam - Register</h1> <hr>
     <h2>Create a new account : </h2>
     <!-- 
         **Un utilisateur (administrateur ou joueur) doit pouvoir** : 
@@ -73,7 +87,7 @@ if (isset($_POST['registerForm'])) {
             <input class="btn" type="submit" value="enter" name="registerForm">
         </form>
         <form action="login.php">
-            <input class="btn" type="button" value="Already have an account ?">
+            <input class="btn" type="submit" value="Already have an account ?">
         </form>
     </div>
 

@@ -10,26 +10,19 @@ function redirect(string $url, int $statusCode = 303) { // Redirect HTTP code
     die();
 }
 ! defined("EXPIRYDATE") && define('EXPIRYDATE', time() + (3600 * 24 * 60), false);
-
-
-
-
-
+setcookie("user", "", EXPIRYDATE);
 
 
 
 
 
 if (isset($_POST['loginForm'])) {
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    // if ($result) {
-    //     $message = 'Inscription réussie!';
-    //     header('Location: login.php');
-    // } else {
-    //     $message = 'Erreur lors de l\'inscription.';
-    // }
+    $data = [];
+    $data[] = "login";
+    $data[] = $_POST['username'];
+    $data[] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    setcookie("user", json_encode($data), EXPIRYDATE);
+    redirect("./auth.php");
 }
 
 ?>
@@ -43,8 +36,7 @@ if (isset($_POST['loginForm'])) {
 </head>
 
 <body>
-    <h1>Welcome</h1> <hr>
-    <h2>Please, log in :</h2>
+    <h1>Siam - Login</h1> <hr>
     <!-- 
         **Un utilisateur (administrateur ou joueur) doit pouvoir** : 
 
@@ -74,7 +66,7 @@ if (isset($_POST['loginForm'])) {
             <input class="btn" type="submit" value="enter" name="loginForm">
         </form>
         <form action="register.php">
-            <input class="btn" type="button" value="No account ?">
+            <input class="btn" type="submit" value="No account ?">
         </form>
     </div>
 
