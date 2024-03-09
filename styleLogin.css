@@ -38,6 +38,24 @@ label {
     font-size: 18pt;
 }
 
+form {
+    text-align: center;
+}
+
+label {
+    display: inline-block;
+    width: 300px; 
+    text-align: right;
+    margin-right: 10px; 
+    margin-left: -300px;
+}
+
+input {
+    width: 300px;
+    padding: 6px; 
+    margin-bottom: 10px; 
+}
+
 .btn {
     width: 70%;
     margin-left:15%;

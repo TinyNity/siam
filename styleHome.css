@@ -1,0 +1,60 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align:center;
+    font-size: 60pt;
+    color:rgb(197, 170, 255);
+}
+
+hr {
+    width: 85%;
+    background-color: white;
+    margin: 0 auto;
+}
+
+
+body {
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ribbon {
+    background-color: rgb(48, 33, 81);
+    padding: 10px;
+    width: 100%;
+    text-align: right;
+}
+
+.ribbon p {
+    display: inline-block;
+    margin-right: auto;
+}
+
+
+#dcButton {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.buttons-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust the button size as needed */
+    gap: 10px;
+    margin-top: 20px;
+    max-width: 800px; /* Set a maximum width for the button container */
+    width: 100%;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 100%; /* Make buttons take the full width of the grid cell */
+}

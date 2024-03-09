@@ -1,5 +1,6 @@
 <?php
-
+include_once "EStatus.php";
+include_once "utils.php";
 //? This file is used to handle every interaction with the master database
 
 class DbInterface {
@@ -37,24 +38,33 @@ class DbInterface {
         return self::$instance;
     }
 
-    public function checkUserExistence(String $username) : bool{
+    public function checkUserExistence(String $username) : bool {
         $db = new SQLite3("./db.sqlite");
-        $query = $db->query("
+        error_log("Checking " . $username);
+        $pQuery = $db->prepare("
             SELECT username FROM users c
             WHERE EXISTS (
-                    SELECT 1 FROM users
-                    WHERE $username = c.username )
+                SELECT 1 FROM users
+                WHERE username = :username
+            )
         ");
-        if (!$query) {
+        $pQuery->bindParam(':username', $username, SQLITE3_TEXT);
+        $res = $pQuery->execute();
+
+        if (!$res) {
+            $db->close();
             return false;
         }
-        return true;
+
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        return ($row !== false);
     }
 
-    public function registerAccount(String $username, String $password, bool $admin = false) : bool {
+    public function registerAccount(String $username, String $password, bool $admin = false) : String {
         $db = new SQLite3("./db.sqlite");
         if ($this->checkUserExistence($username)) { //? User is in database, can't create a new account with the same username
-            return false;
+            return EStatus::USERINDB;
         }
         $pQuery = $db->prepare("
             INSERT INTO users (username, password, isAdmin)
@@ -65,12 +75,32 @@ class DbInterface {
             $pQuery->bindParam(":password", $password, SQLITE3_TEXT);
             $pQuery->bindParam(":isAdmin", $admin, SQLITE3_TEXT);
             $pQuery->execute();
-            return true;
+            return EStatus::USERCREATED;
         } catch (Exception $e) {
             echo $e->getMessage();
             return false;
         } finally {
             $db->close();
         }
+    }
+
+    public function loginUser(String $username, String $password) : string {
+        $db = new SQLite3("./db.sqlite");
+        if (!$this->checkUserExistence($username)) { //? Can't log in to an unregistered account
+            return EStatus::NOUSER;
+        }
+        $pQuery = $db->prepare("SELECT password FROM users WHERE username = :username");
+        $pQuery->bindParam(":username", $username, SQLITE3_TEXT);
+        $result = $pQuery->execute();
+
+        if ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $hashedPW = $row['password'];
+            error_log("Hashed pw : " . $hashedPW);
+            error_log("Clear pw : " . $password);
+            if (password_verify($password, $hashedPW)) { 
+                return EStatus::APPROVED;
+            }
+        }
+        return EStatus::REJECTED;
     }
 }
