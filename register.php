@@ -14,8 +14,8 @@ if (isset($_POST['registerForm'])) {
         js("window.location = \"./register.php\" ");
     }   
     $data = [];
-    $data[] = $_POST['username'];
-    $data[] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $data['username'] = $_POST['username'];
+    $data['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $status = authRegister(json_encode($data));
     error_log($status);
     if ($status == EStatus::USERCREATED) {
