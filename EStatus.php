@@ -11,10 +11,14 @@ class EStatus {
         = "User already in database";
     const USERCREATED
         = "User successfully created";
+    const NOGAME
+        = "Game not found";
     const GAMECREATED
         = "Game successfully created";
     const GAMEISFULL
         = "Game is full";
-    const ADDEDPLAYER
+    const PLAYERADDED
         = "Player successfully added";
+    const GAMEBOARDCREATED
+        = "Gameboard successfully created"; 
     }
