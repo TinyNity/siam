@@ -23,6 +23,27 @@ class DbInterface {
                         isAdmin INTEGER NOT NULL
                         )
                 ");
+
+                $db->query("
+                    CREATE TABLE IF NOT EXISTS players (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        reserved_piece INT NOT NULL,
+                        id_user INTEGER NOT NULL,
+                        id_game INTEGER NOT NULL,
+                        FOREIGN KEY(id_user) REFERENCES users(id),
+                        FOREIGN KEY(id_game) REFERENCES games(id)
+                        )
+                    ");
+
+                $db->query("
+                    CREATE TABLE IF NOT EXISTS games (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        status TEXT NOT NULL,
+                        nb_player INT NOT NULL,
+                        current_player_turn INTEGER NOT NULL,
+                        FOREIGN KEY(current_player_turn) REFERENCES players(id)
+                        )
+                    ");
             } catch (Exception $exception) {
                 echo $exception->getMessage();
             } finally {
@@ -102,5 +123,9 @@ class DbInterface {
             }
         }
         return EStatus::REJECTED;
+    }
+
+    public function createGame(){
+        
     }
 }

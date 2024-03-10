@@ -98,10 +98,18 @@ class Cell{
 
 }
 
+class Player{
+    constructor(){
+        this.id=null;
+        this.reservedPiece=0;
+    }
+}
+
 class Siam{
     constructor(){
         this.gameboard=[];
         this.selectedCell=null;
+        this.players=[];
     }
 
     //? Function to initialize a gameboard
@@ -198,7 +206,7 @@ class Siam{
     }
 
     //? Function to check if the requested move is possible
-    tryMovePiece(row,col){
+    movePiece(row,col){
         let currentCell=this.gameboard[row][col];
         if (this.selectedCell==null && currentCell.piece!=Piece.VOID){
             this.selectedCell=currentCell;
@@ -237,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cells.forEach(cell=>{
         cell.addEventListener('click',() => {
-            game.tryMovePiece(cell.getAttribute('data-row'),cell.getAttribute('data-col'));
+            game.movePiece(cell.getAttribute('data-row'),cell.getAttribute('data-col'));
         });
     })
 });
