@@ -1,5 +1,6 @@
 <?php
 include_once "EStatus.php";
+include_once "EGameStatus.php";
 include_once "utils.php";
 //? This file is used to handle every interaction with the master database
 
@@ -162,7 +163,7 @@ class DbInterface {
             $pQuery->bindParam(":status",$status,SQLITE3_INTEGER);
             $pQuery->execute();
             $gameid=$db->lastInsertRowID();
-            addPlayerToGame($username,$gameid);
+            $this->addPlayerToGame($username,$gameid);
             return EStatus::GAMECREATED;
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -174,12 +175,16 @@ class DbInterface {
 
     public function addPlayerToGame(String $username, int $gameid) : string {
         $db=new SQLite3("./db.sqlite");
-        if (gameIsFull($gameid)){
+        if ($this->gameIsFull($gameid)){
+            $db->close();
             return EStatus::GAMEISFULL;
         }
         $useridQuery=$db->prepare("SELECT id FROM users WHERE username=:username");
         $useridQuery->bindParam(":username",$username,SQLITE3_TEXT);
-        $userid=$useridQuery->execute();
+        $result=$useridQuery->execute();
+
+        $row=$result->fetchArray(SQLITE3_ASSOC);
+        $userid=$row["id"];
 
         $pQuery=$db->prepare("
                             INSERT INTO players (reserved_piece,id_user,id_game)
@@ -190,6 +195,19 @@ class DbInterface {
         $pQuery->execute();
         
         $db->query("UPDATE games SET nb_player=nb_player + 1 WHERE id = $gameid");
+        $db->close();
         return EStatus::ADDEDPLAYER;
+    }
+
+    public function gameIsFull(int $gameid) : bool {
+        $db=new SQLite3("./db.sqlite");
+        $pQuery=$db->prepare("SELECT nb_player FROM games WHERE id=:game_id");
+        $pQuery->bindParam(":game_id",$gameid,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        if ($result){
+            $row=$result->fetchArray(SQLITE3_ASSOC);
+            $nb_player=$row["nb_player"];
+        }
+        return $nb_player==2;
     }
 }
