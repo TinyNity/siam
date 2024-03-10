@@ -7,20 +7,20 @@ Vous devrez gérer une table des utilisateurs qui contient au départ au moins u
 
 **Un utilisateur (administrateur ou joueur) doit pouvoir** : 
 
-- s'authentifier
-- modifier son mot de passe
-- créer et rejoindre une partie en attente d'un joueur
-- visualiser la liste des parties à rejoindre
-- visualiser la liste des parties que cet utilisateur a en cours. pour chaque partie, mettre  évidence le joueur dont c'est le tour
-- jouer un coup dans une partie en cours
-- se déconnecter
+- [x] s'authentifier
+- [ ] modifier son mot de passe
+- [ ] créer et rejoindre une partie en attente d'un joueur
+- [ ] visualiser la liste des parties à rejoindre
+- [ ] visualiser la liste des parties que cet utilisateur a en cours. pour chaque partie, mettre  évidence le joueur dont c'est le tour
+- [ ] jouer un coup dans une partie en cours
+- [x] se déconnecter
 
 
 **Un administrateur doit pouvoir** :
 
-- créer un compte joueur
-- jouer dans n'importe quelle partie quelque soit le joueur actif
-- supprimer une partie en cours
+- [ ] créer un compte joueur
+- [ ] jouer dans n'importe quelle partie quelque soit le joueur actif
+- [ ] supprimer une partie en cours
 
 ## Jeu Siam
 
@@ -28,12 +28,12 @@ vous devrez gérer une table des parties. Modéliser le plateau de jeu pour stoc
 
 ### La page du jeu:
 
-- affiche le plateau dans sa configuration actuelle
-- indique le joueur dont c'est le tour
-- affiche le nombre de pièces en réserve pour chaque joueur
-- met en évidence la dernière pièce à avoir été déplacée
-- si c'est au joueur actif de jouer, lui propose de sélectionner une pièce du plateau ou de la réserve (toutes mises en évidence), puis recharge la page.
-- à l'étape suivante, lui propose de cliquer sur une des zones de destination possibles et mise en évidence, ou d'annuler la sélection initiale, puis recharge la page.
+- [ ] affiche le plateau dans sa configuration actuelle
+- [ ] indique le joueur dont c'est le tour
+- [ ] affiche le nombre de pièces en réserve pour chaque joueur
+- [ ] met en évidence la dernière pièce à avoir été déplacée
+- [ ] si c'est au joueur actif de jouer, lui propose de sélectionner une pièce du plateau ou de la réserve (toutes mises en évidence), puis recharge la page.
+- [ ] à l'étape suivante, lui propose de cliquer sur une des zones de destination possibles et mise en évidence, ou d'annuler la sélection initiale, puis recharge la page.
 
 
 **Il faut bien sûr tester les conditions de victoire et détecter la fin de partie!**
