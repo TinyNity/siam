@@ -1,4 +1,6 @@
-
+<?php
+    
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +50,7 @@
                 <td id="cell-4-4" class="cell"></td>    
             </tr>
         </table>
-
+        
+        <button>Add piece to gameboard</button>
     </body>
 </html>

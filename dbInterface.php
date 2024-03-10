@@ -23,6 +23,49 @@ class DbInterface {
                         isAdmin INTEGER NOT NULL
                         )
                 ");
+
+                $db->query("
+                    CREATE TABLE IF NOT EXISTS players (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        reserved_piece INTEGER NOT NULL,
+                        id_user INTEGER NOT NULL,
+                        id_game INTEGER NOT NULL,
+                        FOREIGN KEY(id_user) REFERENCES users(id),
+                        FOREIGN KEY(id_game) REFERENCES games(id)
+                        )
+                    ");
+
+                $db->query("
+                    CREATE TABLE IF NOT EXISTS games (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        status INTEGER NOT NULL,
+                        nb_player INTEGER NOT NULL,
+                        current_player_turn INTEGER,
+                        FOREIGN KEY(current_player_turn) REFERENCES players(id)
+                        )
+                    ");
+                
+                $db->query("
+                    CREATE TABLE IF NOT EXISTS gameboard_cell (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        row INTEGER NOT NULL,
+                        column INTEGER NOT NULL,
+                        rotation INTEGER NOT NULL,
+                        id_piece INTEGER NOT NULL,
+                        id_player INTEGER,
+                        id_game INTEGER NOT NULL,
+                        FOREIGN KEY(id_piece) REFERENCES pieces(id),
+                        FOREIGN KEY(id_player) REFERENCES player(id),
+                        FOREIGN KEY(id_game) REFERENCES games(id)
+                        )
+                    ");
+
+                $db->query("
+                    CREATE TABLE IF NOT EXISTS pieces(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        piece_name TEXT NOT NULL
+                        )
+                    ");
             } catch (Exception $exception) {
                 echo $exception->getMessage();
             } finally {
@@ -102,5 +145,51 @@ class DbInterface {
             }
         }
         return EStatus::REJECTED;
+    }
+
+    public function createGame(String $username) : string{
+        $db=new SQLite3("./db.sqlite");
+        if (!$this->checkUserExistence($username)){ //? Can't create a game if the user doesn't exist
+            return EStatus::NOUSER;
+        }
+        $pQuery=$db->prepare("
+                            INSERT INTO games (status,nb_player,current_player_turn)
+                            VALUES (:status,0,null) 
+                            ");
+        $status=GameStatus::NOTSTARTED;
+
+        try{
+            $pQuery->bindParam(":status",$status,SQLITE3_INTEGER);
+            $pQuery->execute();
+            $gameid=$db->lastInsertRowID();
+            addPlayerToGame($username,$gameid);
+            return EStatus::GAMECREATED;
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            return false;
+        } finally {
+            $db->close();
+        }
+    }
+
+    public function addPlayerToGame(String $username, int $gameid) : string {
+        $db=new SQLite3("./db.sqlite");
+        if (gameIsFull($gameid)){
+            return EStatus::GAMEISFULL;
+        }
+        $useridQuery=$db->prepare("SELECT id FROM users WHERE username=:username");
+        $useridQuery->bindParam(":username",$username,SQLITE3_TEXT);
+        $userid=$useridQuery->execute();
+
+        $pQuery=$db->prepare("
+                            INSERT INTO players (reserved_piece,id_user,id_game)
+                            VALUES (3,:id_user,:id_game) 
+                            ");
+        $pQuery->bindParam(":id_user",$userid);
+        $pQuery->bindParam(":id_game",$gameid);
+        $pQuery->execute();
+        
+        $db->query("UPDATE games SET nb_player=nb_player + 1 WHERE id = $gameid");
+        return EStatus::ADDEDPLAYER;
     }
 }
