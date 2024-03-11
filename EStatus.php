@@ -31,4 +31,8 @@ class EStatus {
         = "User is player";
     const USERISNOTPLAYER
         = "User is not player";
+    const GAMEBOARDUPDATED
+        = "Gameboard successfully updated";
+    const GAMEBOARDUPDATEFAILED
+        = "Gameboard could not update";
     }

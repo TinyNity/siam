@@ -6,7 +6,7 @@
 
     $dbInterface=DbInterface::getInstance();
     if (isset($_GET["id_game"]) && isset($_GET["id_player"]) && $dbInterface->checkUserIsPlayer($_COOKIE["username"],$_GET["id_player"]) && $dbInterface->checkPlayerInGame($_GET["id_player"],$_GET["id_game"])){
-      
+        $_SESSION["id_game"]=$_GET["id_game"];
     }
     else {
         redirect("home.php");
@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="styleGame.css">
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>Siam game</title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script defer src="siamLogic.js"></script>
     </head>
 

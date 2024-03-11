@@ -51,12 +51,12 @@ class DbInterface {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         row INTEGER NOT NULL,
                         column INTEGER NOT NULL,
-                        rotation INTEGER NOT NULL,
+                        direction INTEGER,
                         id_piece INTEGER,
                         id_player INTEGER,
                         id_game INTEGER NOT NULL,
                         FOREIGN KEY(id_piece) REFERENCES pieces(id),
-                        FOREIGN KEY(id_player) REFERENCES player(id),
+                        FOREIGN KEY(id_player) REFERENCES players(id),
                         FOREIGN KEY(id_game) REFERENCES games(id)
                         )
                     ");
@@ -352,8 +352,8 @@ class DbInterface {
         $db=new SQLite3("./db.sqlite");
         
         $pQuery=$db->prepare("
-                            INSERT INTO gameboard_cell(row,column,rotation,id_player,id_piece,id_game)
-                            VALUES (:row,:column,0,null,:id_piece,:id_game)");
+                            INSERT INTO gameboard_cell(row,column,direction,id_player,id_piece,id_game)
+                            VALUES (:row,:column,null,null,:id_piece,:id_game)");
         $board_size=5;
         $rock_row=2;
         $min_rock_col=1;
@@ -379,10 +379,11 @@ class DbInterface {
         return EStatus::GAMEBOARDCREATED;
     }
 
-    public function getGameBoard(int $id_game) : array {
+    public function getGameboard(int $id_game) : array {
+        $gameboardData=array();
         if (!$this->checkGameExistence($id_game)){
             error_log(EStatus::NOGAME);
-            return array();
+            return $gameboardData;
         }
         $db=new SQLite3("./db.sqlite");
         $pQuery=$db->prepare("
@@ -392,12 +393,59 @@ class DbInterface {
         $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
         $result=$pQuery->execute();
         if (!$result){
-            return array();
+            $db->close();
+            return $gameboardData;
         }
-        $gameboardData=array();
         while ($row=$result->fetchArray(SQLITE3_ASSOC)){
             $gameboardData[]=$row;
         };
+        $db->close();
         return $gameboardData;
+    }
+
+    public function idPieceToPiece(int|null $id_piece) : String{
+        if ($id_piece==null){
+            return "";
+        }
+        $db=new SQLite3("./db.sqlite");
+        $pQuery=$db->prepare("
+                        SELECT piece_name FROM pieces
+                        WHERE id=:id_piece
+                        ");
+        $pQuery->bindParam(":id_piece",$id_piece,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        if (!$result){
+            $db->close();
+            return "";
+        }
+        $row=$result->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        return $row["piece_name"];
+    }
+
+    function updateGameboardCell(int $id_game,int $row,int $column,int | null $id_piece,int|null $id_player,int|null $direction):string{
+        if(!$this->checkGameExistence($id_game)){
+            return EStatus::NOGAME;
+        }
+        error_log("Trying to update gameboard of game ".$id_game);
+        $db=new SQLite3("./db.sqlite");
+        $pQuery=$db->prepare("
+                        UPDATE gameboard_cell 
+                        SET id_piece=:id_piece, id_player=:id_player,direction=:direction
+                        WHERE id_game=:id_game AND row=:row AND column=:column
+                        ");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $pQuery->bindParam(":row",$row,SQLITE3_INTEGER);
+        $pQuery->bindParam(":column",$column,SQLITE3_INTEGER);
+        $pQuery->bindParam(":id_player",$id_player,SQLITE3_INTEGER);
+        $pQuery->bindParam(":id_piece",$id_piece,SQLITE3_INTEGER);
+        $pQuery->bindParam(":direction",$direction,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        if (!$result){
+            $db->close();
+            return EStatus::GAMEBOARDUPDATEFAILED;
+        }
+        $db->close();
+        return EStatus::GAMEBOARDUPDATED;
     }
 }
