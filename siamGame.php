@@ -1,5 +1,13 @@
 <?php
-    
+    include_once "dbInterface.php";
+    include_once "utils.php";
+    $dbInterface=DbInterface::getInstance();
+    if (isset($_GET["id_game"]) && isset($_GET["id_player"]) && $dbInterface->checkUserIsPlayer($_COOKIE["username"],$_GET["id_player"]) && $dbInterface->checkPlayerInGame($_GET["id_player"],$_GET["id_game"])){
+
+    }
+    else {
+        redirect("home.php");
+    }
 ?>
 
 <!DOCTYPE html>

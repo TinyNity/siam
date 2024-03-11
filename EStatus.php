@@ -21,4 +21,14 @@ class EStatus {
         = "Player successfully added";
     const GAMEBOARDCREATED
         = "Gameboard successfully created"; 
+    const PLAYERINGAME
+        = "Player is in game";
+    const PLAYERNOTINGAME
+        = "Player is not in game";
+    const NOPLAYER
+        = "Player not found";
+    const USERISPLAYER
+        = "User is player";
+    const USERISNOTPLAYER
+        = "User is not player";
     }

@@ -117,7 +117,7 @@ class DbInterface {
                 WHERE id = :id_game
             )
         ");
-        $pQuery->bindParam(':game', $id_game, SQLITE3_INTEGER);
+        $pQuery->bindParam(':id_game', $id_game, SQLITE3_INTEGER);
         $res = $pQuery->execute();
 
         if (!$res) {
@@ -130,6 +130,97 @@ class DbInterface {
         return ($row !== false);
     }
 
+    public function checkPlayerExistence(int $id_player):bool{
+        $db=new SQLite3("./db.sqlite");
+        error_log("Checking player ".$id_player);
+        $pQuery = $db->prepare("
+            SELECT id FROM players c
+            WHERE EXISTS (
+                SELECT 1 FROM players
+                WHERE id = :id_player
+            )
+        ");
+        $pQuery->bindParam(':id_player', $id_player, SQLITE3_INTEGER);
+        $res = $pQuery->execute();
+
+        if (!$res) {
+            $db->close();
+            return false;
+        }
+
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        return ($row !== false);
+    }
+
+    public function checkPlayerInGame(int $id_player,int $id_game):bool{
+        $db=new SQLite3("./db.sqlite");
+        if (!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            $db->close();
+            return false;
+        }
+        if (!$this->checkPlayerExistence($id_player)){
+            error_log(EStatus::NOPLAYER);
+            $db->close();
+            return false;
+        }
+        error_log("Checking player ".$id_player." in game ".$id_game);
+        $pQuery=$db->prepare("
+            SELECT id_game FROM players WHERE id=:id_player
+            ");
+        $pQuery->bindParam(":id_player",$id_player,SQLITE3_INTEGER);
+        $res=$pQuery->execute();
+
+        if (!$res){
+            $db->close();
+            return false;
+        }
+        $row=$res->fetchArray(SQLITE3_ASSOC);
+        $status=$row["id_game"]==$id_game;
+        if($status) error_log(EStatus::PLAYERINGAME);
+        else error_log(EStatus::PLAYERNOTINGAME);
+        $db->close();
+        return $status;
+    }
+
+    public function checkUserIsPlayer(String $username, int $id_player) : bool {
+        $db=new  SQLite3("./db.sqlite");
+        if (!$this->checkUserExistence($username)){
+            error_log(EStatus::NOUSER);
+            $db->close();
+            return false;
+        }
+        if (!$this->checkPlayerExistence($id_player)){
+            error_log(EStatus::NOPLAYER);
+            $db->close();
+            return false;
+        }
+
+        error_log("Checking user ".$username." is player ".$id_player);
+        $pQuery=$db->prepare("
+            SELECT id_user 
+            FROM players p
+            INNER JOIN users u
+                on p.id_user = u.id
+            WHERE
+                u.username=:username AND p.id=:id_player
+            ");
+        $pQuery->bindParam(":id_player",$id_player,SQLITE3_INTEGER);
+        $pQuery->bindParam(":username",$username,SQLITE3_TEXT);
+        $res=$pQuery->execute();
+
+        if (!$res){
+            $db->close();
+            return false;
+        }
+        $row = $res->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        $status=$row!==false;
+        if ($status) error_log(EStatus::USERISPLAYER);
+        else error_log(EStatus::USERISNOTPLAYER);
+        return $status;
+    }
     public function createPiecesData(){
         $db=new SQLite3("./db.sqlite");
         $pQuery=$db->prepare("
@@ -220,7 +311,7 @@ class DbInterface {
     }
 
     public function addPlayerToGame(String $username, int $id_game) : string {
-        if ($this->checkGameExistence($id_game)){
+        if (!$this->checkGameExistence($id_game)){
             return EStatus::NOGAME;
         }
         if ($this->gameIsFull($id_game)){
@@ -258,9 +349,6 @@ class DbInterface {
     }
     
     public function createGameBoard(int $id_game) : string {
-        if ($this->checkGameExistence($id_game)){
-            return EStatus::NOGAME;
-        }
         $db=new SQLite3("./db.sqlite");
         
         $pQuery=$db->prepare("
