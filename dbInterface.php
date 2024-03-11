@@ -377,6 +377,27 @@ class DbInterface {
         }
         $db->close();
         return EStatus::GAMEBOARDCREATED;
+    }
 
+    public function getGameBoard(int $id_game) : array {
+        if (!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            return array();
+        }
+        $db=new SQLite3("./db.sqlite");
+        $pQuery=$db->prepare("
+                            SELECT * FROM gameboard_cell
+                            WHERE id_game=:id_game
+                            ");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        if (!$result){
+            return array();
+        }
+        $gameboardData=array();
+        while ($row=$result->fetchArray(SQLITE3_ASSOC)){
+            $gameboardData[]=$row;
+        };
+        return $gameboardData;
     }
 }

@@ -1,4 +1,5 @@
 const BOARD_SIZE=5;
+const id_player=parseInt(document.getElementById("id_player").value);
 
 //! DATABASE NEEDS TO STORE THE SAME VALUE FOR DIRECTION AND PIECE AS THE VALUES IN THIS SCRIPT
 class Direction{
@@ -118,14 +119,6 @@ class Siam{
             this.gameboard.push([]);
             for (let j=0;j<BOARD_SIZE;j++){
                 this.gameboard[i].push(new Cell(Piece.VOID,Direction.UP,null,i,j));
-                let tableCell=document.getElementById(`cell-${i}-${j}`);    //Create a blank img element for each cell
-                tableCell.setAttribute("data-row",i);
-                tableCell.setAttribute("data-col",j);
-                let img=document.createElement('img');
-                img.src='';
-                img.id=`image-${i}-${j}`;
-                img.classList.add('piece');
-                tableCell.appendChild(img);
             }
         }
         this.gameboard[2][1].piece=Piece.ROCK;
@@ -208,6 +201,9 @@ class Siam{
     //? Function to check if the requested move is possible
     movePiece(row,col){
         let currentCell=this.gameboard[row][col];
+        if (currentCell.player!=id_player && this.selectedCell==null){
+            return;
+        }
         if (this.selectedCell==null && currentCell.piece!=Piece.VOID){
             this.selectedCell=currentCell;
         }
@@ -238,6 +234,7 @@ class Siam{
 let game=new Siam();
 
 document.addEventListener("DOMContentLoaded", () => {
+
     game.init();
     game.renderBoard();
 
