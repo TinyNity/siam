@@ -29,6 +29,7 @@ class DbInterface {
                     CREATE TABLE IF NOT EXISTS players (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         reserved_piece INTEGER NOT NULL,
+                        id_piece INTEGER,
                         id_user INTEGER NOT NULL,
                         id_game INTEGER NOT NULL,
                         FOREIGN KEY(id_user) REFERENCES users(id),
@@ -324,8 +325,8 @@ class DbInterface {
         $row=$result->fetchArray(SQLITE3_ASSOC);
         $id_user=$row["id"];
         $pQuery=$db->prepare("
-                            INSERT INTO players (reserved_piece,id_user,id_game)
-                            VALUES (3,:id_user,:id_game) 
+                            INSERT INTO players (reserved_piece,id_piece,id_user,id_game)
+                            VALUES (3,null,:id_user,:id_game) 
                             ");
         $pQuery->bindParam(":id_user",$id_user);
         $pQuery->bindParam(":id_game",$id_game);
@@ -403,26 +404,6 @@ class DbInterface {
         return $gameboardData;
     }
 
-    public function idPieceToPiece(int|null $id_piece) : String{
-        if ($id_piece==null){
-            return "";
-        }
-        $db=new SQLite3("./db.sqlite");
-        $pQuery=$db->prepare("
-                        SELECT piece_name FROM pieces
-                        WHERE id=:id_piece
-                        ");
-        $pQuery->bindParam(":id_piece",$id_piece,SQLITE3_INTEGER);
-        $result=$pQuery->execute();
-        if (!$result){
-            $db->close();
-            return "";
-        }
-        $row=$result->fetchArray(SQLITE3_ASSOC);
-        $db->close();
-        return $row["piece_name"];
-    }
-
     function updateGameboardCell(int $id_game,int $row,int $column,int | null $id_piece,int|null $id_player,int|null $direction):string{
         if(!$this->checkGameExistence($id_game)){
             return EStatus::NOGAME;
@@ -447,5 +428,32 @@ class DbInterface {
         }
         $db->close();
         return EStatus::GAMEBOARDUPDATED;
+    }
+
+    function getPlayer(int $id_game) : array{
+        $players=array();
+        if(!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            return $players;
+        }
+        error_log("Trying to get player of game ".$id_game);
+        $db=new SQLite3("./db.sqlite");
+        $pQuery=$db->prepare("
+                            SELECT * FROM players WHERE id_game=:id_game
+                            ");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        if (!$result){
+            $db->close();
+            error_log(EStatus::NOPLAYER);
+            return $players;
+        }
+
+        while ($row=$result->fetchArray(SQLITE3_ASSOC)){
+            $players[]=$row;
+        }
+
+        $db->close();
+        return $players;
     }
 }
