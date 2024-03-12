@@ -4,12 +4,12 @@
 
 include_once "dbInterface.php";
 include_once "utils.php";
-var_dump($_COOKIE);
 if (isset($_COOKIE["username"])) {
     error_log("User cookie is set as " . $_COOKIE["username"] );
-    $userCookie = $_COOKIE["username"];
+    $username = $_COOKIE["username"];
 } else {
     error_log("User cookie is not set");
+    redirect("./login.php");
 }
 
 ?>
@@ -20,15 +20,23 @@ if (isset($_COOKIE["username"])) {
     <link rel="stylesheet" href="styleHome.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scriptHome.js" defer></script>
     <title>SIAM - Home</title>
 </head>
-
 <body>
     <div class="ribbon">
-    <p>You're logged in as <?php echo $userCookie[0]; ?></p>
-        <input type="button" id="dcButton" value="Disconnect">  
+        <p>You're logged in as </p>
+        <form id="dcForm" action="./logout.php">
+            <select id="dropdownMenu" onchange="handleDropdownChange(this)">
+                <option value="disconnect">Disconnect</option>
+                <option value="changePassword">Change Password</option>
+                <option value="adminDashboard">Admin Dashboard</option>
+                <option value="" disabled selected><?php echo $username; ?></option>
+            </select>
+        </form>
     </div>
-    <h1>Siam - Home</h1> <hr>
+    <h1>Siam - Home</h1>
+    <hr>
     <div class="buttons-container">
         <button>Button 1</button>
         <button>Button 2</button>
@@ -36,5 +44,4 @@ if (isset($_COOKIE["username"])) {
         <button>Button 4</button>
     </div>
 </body>
-
 </html>

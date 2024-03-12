@@ -26,22 +26,14 @@ body {
     align-items: center;
 }
 
-.ribbon {
-    background-color: rgb(48, 33, 81);
-    padding: 10px;
-    width: 100%;
-    text-align: right;
-}
-
-.ribbon p {
-    display: inline-block;
-    margin-right: auto;
-}
-
-
 #dcButton {
+    margin: 0px 10px 0 10px ;
     padding: 10px 20px;
     font-size: 16px;
+}
+
+#dcForm {
+    display: inline-block;
 }
 
 .buttons-container {
@@ -57,4 +49,54 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     width: 100%; /* Make buttons take the full width of the grid cell */
+}
+
+/* Styling for the dropdown */
+#dropdownMenu {
+    text-align: center;
+    appearance: none;
+    background-color: rgb(48, 33, 81);
+    color: white;
+    border: 1px solid rgb(48, 33, 81);
+    padding: 15px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Styling for the dropdown options */
+#dropdownMenu option {
+    background-color: rgb(48, 33, 81);
+    color: white;
+}
+
+/* Highlight on hover */
+#dropdownMenu:hover {
+    background-color: rgb(68, 53, 101);
+    border: 1px solid rgb(68, 53, 101);
+}
+
+/* Styling for the ribbon */
+.ribbon {
+    background-color: rgb(48, 33, 81);
+    padding: 10px;
+    width: 100%;
+    text-align: right;
+    position: relative;
+}
+
+.ribbon p {
+    display: inline-block;
+    margin-right: auto;
+    color: white;
+}
+
+/* Adjustments for the dropdown arrow */
+#dropdownMenu:after {
+    content: '▼'; /* Unicode character for down arrow */
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
 }

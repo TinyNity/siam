@@ -263,7 +263,7 @@ class DbInterface {
         }
     }
 
-    public function loginUser(String $username, String $password) : string {
+    public function loginUser(String $username, String $password) : String {
         $db = new SQLite3("./db.sqlite");
         if (!$this->checkUserExistence($username)) { //? Can't log in to an unregistered account
             return EStatus::NOUSER;
@@ -274,13 +274,30 @@ class DbInterface {
 
         if ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $hashedPW = $row['password'];
-            error_log("Hashed pw : " . $hashedPW);
-            error_log("Clear pw : " . $password);
+            error_log("Hashed pw : $hashedPW");
+            error_log("Clear pw : $password");
             if (password_verify($password, $hashedPW)) { 
                 return EStatus::APPROVED;
             }
         }
         return EStatus::REJECTED;
+    }
+
+
+    public function changeUserPassword(String $username, String $newPassword) {
+        $db = new SQLite3("./db.sqlite");
+        if (!$this->checkUserExistence($username)) { //? Can't log in to an unregistered account
+            return EStatus::NOUSER;
+        }
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    
+        $pQuery = $db->prepare("UPDATE users SET password = ? WHERE username = ?");
+        $pQuery->bind_param("ss", $hashedPassword, $username);
+    
+        $success = $pQuery->execute();
+        $pQuery->close();
+    
+        return $success;
     }
 
     public function createGame(String $username) : string{
@@ -348,6 +365,7 @@ class DbInterface {
         return $nb_player==2;
     }
     
+
     public function createGameBoard(int $id_game) : string {
         $db=new SQLite3("./db.sqlite");
         

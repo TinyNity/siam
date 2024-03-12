@@ -17,10 +17,8 @@ if (isset($_POST['loginForm']) and $_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("");
     if ($status == EStatus::APPROVED) {
         error_log("Setting up the cookie with " . $_POST["username"] . "...");
-        //! POURQUOI CE COOKIE DE MERDE IL PASSE PAS LA TA GRAND MERE LA PUTE
         setcookie("username", $_POST["username"],time()+ 60 * 60 * 24); // 24 hours
-        var_dump($_COOKIE);
-        //redirect("./home.php", false);
+        redirect("./home.php", false);
     } else {
         alert($status);
     }
