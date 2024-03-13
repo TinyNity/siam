@@ -4,6 +4,7 @@
 
 include_once "dbInterface.php";
 include_once "utils.php";
+
 if (isset($_COOKIE["username"])) {
     error_log("User cookie is set as " . $_COOKIE["username"] );
     $username = $_COOKIE["username"];
@@ -37,11 +38,43 @@ if (isset($_COOKIE["username"])) {
     </div>
     <h1>Siam - Home</h1>
     <hr>
-    <div class="buttons-container">
-        <button>Button 1</button>
-        <button>Button 2</button>
-        <button>Button 3</button>
-        <button>Button 4</button>
+    <div id="content">
+        <div id="container">
+            <div id="games">
+                <h3>Games</h3>
+                <hr>
+                <?php
+                $db = DBInterface::getInstance();
+                $data = $db->fetchGames();
+                foreach ($data as $key => $value) {
+                    echo '
+            <div class="game">
+                ';
+                    echo '<p style="display:inline-block;"> ';
+                    echo $data[$key]["status"]. " </p>";
+                    //? Username color
+                    echo '
+                <p style="display:inline-block">';
+                    echo $data[$key]["nb_player"]. " :";
+                    echo "</p>";
+
+                    echo '
+                <p style="display:inline-block;">';
+                    echo $data[$key]["current_player_turn"];
+                    echo "</p>";
+                    echo '
+            </div>
+                    ';
+                }
+                ?>
+            </div>
+            <div class="buttons-container">
+                <button>Button 1</button>
+                <button>Button 2</button>
+                <button>Button 3</button>
+                <button>Button 4</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

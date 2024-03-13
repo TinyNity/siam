@@ -6,15 +6,15 @@
 }
 
 h1 {
-    text-align:center;
+    text-align: center;
     font-size: 60pt;
-    color:rgb(197, 170, 255);
+    color: rgb(197, 170, 255);
 }
 
 hr {
     width: 85%;
     background-color: white;
-    margin: 0 auto;
+    margin: 0 auto 40px auto;
 }
 
 
@@ -27,7 +27,7 @@ body {
 }
 
 #dcButton {
-    margin: 0px 10px 0 10px ;
+    margin: 0px 10px 0 10px;
     padding: 10px 20px;
     font-size: 16px;
 }
@@ -38,17 +38,20 @@ body {
 
 .buttons-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust the button size as needed */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    /* Adjust the button size as needed */
     gap: 10px;
     margin-top: 20px;
-    max-width: 800px; /* Set a maximum width for the button container */
+    max-width: 800px;
+    /* Set a maximum width for the button container */
     width: 100%;
 }
 
 button {
     padding: 10px 20px;
     font-size: 16px;
-    width: 100%; /* Make buttons take the full width of the grid cell */
+    width: 100%;
+    /* Make buttons take the full width of the grid cell */
 }
 
 /* Styling for the dropdown */
@@ -90,13 +93,38 @@ button {
     color: white;
 }
 
-/* Adjustments for the dropdown arrow */
 #dropdownMenu:after {
-    content: '▼'; /* Unicode character for down arrow */
+    /* content: '▼'; */
     font-size: 12px;
     position: absolute;
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
     pointer-events: none;
+}
+
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#container {
+    display: flex;
+}
+
+#games {
+    flex: 2;
+    margin-right: 20px;
+}
+
+.buttons-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+h3 {
+    text-align: center;
+    font-size: 24pt;
 }
