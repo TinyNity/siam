@@ -481,6 +481,25 @@ class DbInterface {
         return $players;
     }
 
+    function getGameData(int $id_game) : array{
+        $game=array();
+        if(!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            return $game;
+        }
+        
+        $db=new SQLite3("./db.sqlite");
+        $pQuery=$db->prepare("
+                            SELECT * FROM games WHERE id=:id_game
+                            ");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        $game=$result->fetchArray(SQLITE3_ASSOC);
+
+        $db->close();
+        return $game;
+    }
+
     function fetchGames() : array {
         $db = new SQLite3("./db.sqlite");
         $query = $db->query("
