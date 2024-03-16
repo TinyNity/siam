@@ -28,21 +28,31 @@
         <form>
             <input type="hidden" id="id_player" value="<?php echo $_GET["id_player"] ?>">
         </form>
-        <table class="board-container">
-            <?php
-                for ($i=0;$i<BOARD_SIZE;$i++){
-                    echo "<tr>";
-                    for ($j=0;$j<BOARD_SIZE;$j++){
-                        echo "<td id='cell-$i-$j' class='cell' data-row='$i' data-col='$j'>";
-                        echo "<img src id='image-$i-$j' class='piece'>";    
-                        echo "</td>";
-                    }
-                    echo "</tr>";
-                }
-            ?>
-            
-        </table>
-        
-        <button>Add piece to gameboard</button>
+        <div class="game-container">
+            <div class="gameboard">
+                <table class="board-container">
+                    <?php
+                        for ($i=0;$i<BOARD_SIZE;$i++){
+                            echo "<tr>";
+                            for ($j=0;$j<BOARD_SIZE;$j++){
+                                echo "<td id='cell-$i-$j' class='cell' data-row='$i' data-col='$j'>";
+                                echo "<img src id='image-$i-$j' class='piece'>";    
+                                echo "</td>";
+                            }
+                            echo "</tr>";
+                        }
+                    ?>
+                </table>
+                <div>
+                    <button id="addpiece">Add piece to gameboard</button>
+                    <button id="cancel">Cancel selection</button>
+                    <button id="rotate">Rotate selected piece</button>
+                    <button id="endturn">End turn</button>
+                </div>
+            </div>
+            <div class="addpiece-container">
+                <img src id='addpiece-container'>
+            </div>
+        </div>
     </body>
 </html>

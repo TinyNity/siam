@@ -1,19 +1,45 @@
 const BOARD_SIZE=5;
+const MAX_PLAYER=2;
 const id_player=parseInt(document.getElementById("id_player").value);
 //? Ajax functions
 
-function getGameboard(callback){
+function getPlayerData(targetGame){
     $.ajax({
-        url:'sendGameboard.php',
-        type:"GET",
-        dataType:"json",
+        url:'sendPlayer.php',
+        type:'GET',
+        dataType:'json',
         success: function(data){
-            game.init(data);
+            // if(data.length<MAX_PLAYER){
+                // return;
+            // }
+            targetGame.initPlayer(data);
         },
         error:function(xhr,status,error){
             console.error(error);
         }
     })
+}
+
+function getGameboardData(targetGame){
+    $.ajax({
+        url:'sendGameboard.php',
+        type:"GET",
+        dataType:"json",
+        success: function(data){
+            targetGame.initGameboard(data);
+        },
+        error:function(xhr,status,error){
+            console.error(error);
+        }
+    })
+}
+
+function sendGameboard(){
+    for (let i=0;i<BOARD_SIZE;i++){
+        for (let j=0;j<BOARD_SIZE;j++){
+            sendGameboardCell(game.gameboard[i][j]);
+        }
+    }
 }
 
 function sendGameboardCell(cell){
@@ -27,14 +53,18 @@ function sendGameboardCell(cell){
             id_player:cell.player,
             direction:cell.direction
         },
-        success: function(){
-            console.log("youhou");
-        },
         error : function(xhr,status,error){
             console.error(error);
         }
 
     })
+}
+
+class GameStatus{
+    static NOT_STARTED=0;
+    static STARTED=1;
+    static FINISHED=2;
+
 }
 
 //! DATABASE NEEDS TO STORE THE SAME VALUE FOR DIRECTION AND PIECE AS THE VALUES IN THIS SCRIPT
@@ -87,7 +117,9 @@ class Cell{
 
 
     move(row,column){
-        return new Cell(this.piece,this.direction,this.player,row,column);
+        this.row=row;
+        this.column=column;
+        return this;
     }
 
 
@@ -96,6 +128,9 @@ class Cell{
         return new Cell(Piece.VOID,null,null,this.row,this.column);
     }
 
+    rotate(){
+        this.direction=(this.direction+1)%4;
+    }
 
     //? Function to check if a cell can access another one (must be at a distance of 1 square)
     canAccess(cell){
@@ -122,13 +157,13 @@ class Cell{
     getPushStrength(directionPush){
         let pushFactor=Math.abs(directionPush-this.direction); // If the push factor is equal to 2 then the pieces are opposite, if it's equal to 0 then it is the same piece, otherwise the piece is anything else
         if (this.piece==Piece.ROCK){
-            return 0;
-        }
-        if (pushFactor==2) {
             return -1;
         }
+        if (pushFactor==2) {
+            return -2;
+        }
         else if (pushFactor==0){
-            return 1;
+            return 2;
         }
         return 0;
     }
@@ -136,29 +171,41 @@ class Cell{
 }
 
 class Player{
-    constructor(){
-        this.id=null;
-        this.reservedPiece=0;
+    constructor(id,reservedPiece,typePiece){
+        this.id=id;
+        this.reservedPiece=reservedPiece;
+        this.typePiece=typePiece;
+        this.isAddingPiece=false;
     }
 }
 
 class Siam{
     constructor(){
-        this.gameboard=[];
+        this.gameboard=null;
         this.selectedCell=null;
         this.players=[];
+        this.moveDone=false;
+        this.playerTurn=null;
     }
 
     //? Function to initialize a gameboard
-    init(gameboardData){
+    initGameboard(gameboardData){
+        this.gameboard=[];
         for (let i=0;i<BOARD_SIZE;i++){
             this.gameboard.push([]);
             for (let j=0;j<BOARD_SIZE;j++){
                 let gameboardCell=gameboardData[i*BOARD_SIZE+j];
-                this.gameboard[i][j]=new Cell(gameboardCell.id_piece,gameboardCell.direction,gameboardCell.id_player,gameboardCell.row,gameboardCell.column);
+                this.gameboard[gameboardCell.row][gameboardCell.column]=new Cell(gameboardCell.id_piece,gameboardCell.direction,gameboardCell.id_player,gameboardCell.row,gameboardCell.column);
             }
         }
         this.renderBoard();
+    }
+
+    initPlayer(playerData){
+        for (let i=0;i<Math.min(playerData.length,MAX_PLAYER);i++){
+            let tempPlayer=new Player(playerData[i].id,playerData[i].reserved_piece,playerData[i].id_piece);
+            this.players.push(tempPlayer);
+        }
     }
 
     //? Function to move cells in the array
@@ -168,10 +215,11 @@ class Siam{
         let currentCol=this.selectedCell.column;
         let destinationRow=destinationCell.row;
         let destinationCol=destinationCell.column;
-        this.gameboard[currentRow][currentCol]= this.selectedCell.void();
+        if (currentCol!=undefined && currentRow!=undefined){
+            this.gameboard[currentRow][currentCol]= this.selectedCell.void();
+        }
         this.gameboard[destinationRow][destinationCol]= this.selectedCell.move(destinationRow,destinationCol);
-        sendGameboardCell(this.gameboard[currentRow][currentCol]);
-        sendGameboardCell(this.gameboard[destinationRow][destinationCol]);
+        this.moveDone=true;
     }
 
     //? Function to push all cells of a row or column
@@ -183,7 +231,7 @@ class Siam{
         let nextCell=destinationCell;
         let tempCell;
         this.moveCell(destinationCell);
-        do{
+        while(nextCell.piece!=Piece.VOID){
             let nextRow=nextCell.row+rowdir;
             let nextColumn=nextCell.column+columndir;
             if (nextRow<BOARD_SIZE && nextRow>=0 && nextColumn<BOARD_SIZE && nextColumn >=0){
@@ -193,9 +241,8 @@ class Siam{
                 return;
             }
             this.gameboard[nextRow][nextColumn]=nextCell.move(nextRow,nextColumn);
-            sendGameboardCell(this.gameboard[nextRow][nextColumn]);
             nextCell=tempCell;
-        }while(nextCell.piece!=Piece.VOID);
+        }
     }
 
     //? Function to check if a cell can push another one
@@ -212,11 +259,11 @@ class Siam{
                 cellToPush=this.gameboard[cellToPush.row+Direction.getDirectionRow(pushingDirection)][cellToPush.column+Direction.getDirectionColumn(pushingDirection)];
             }
             else {
-                return (pushStrength>=1);
+                return (pushStrength>=0);
             }
         }
 
-        return (pushStrength>=1);
+        return (pushStrength>=0);
     }
 
 
@@ -242,22 +289,31 @@ class Siam{
 
     //? Function to check if the requested move is possible
     movePiece(row,col){
+        if (this.moveDone==true){
+            return;
+        }
         let currentCell=this.gameboard[row][col];
+        let player=this.getPlayer();
         if (currentCell.player!=id_player && this.selectedCell==null){
             return;
         }
+
+        if (player.isAddingPiece && this.canAddPiece(currentCell)){
+            if (currentCell.piece==Piece.VOID) this.moveCell(currentCell);
+            else this.pushCell(currentCell);
+            this.renderBoard();
+        }
+
         if (this.selectedCell==null && currentCell.piece!=Piece.VOID){
             this.selectedCell=currentCell;
         }
         else if (this.selectedCell!=null && currentCell.piece==Piece.VOID && this.selectedCell.canAccess(currentCell)){
             this.moveCell(currentCell);
             this.renderBoard();
-            this.selectedCell=null;
         }
         else if (this.selectedCell!=null && currentCell.piece!=Piece.VOID && this.selectedCell.canAccess(currentCell) && this.canPush(currentCell)){
             this.pushCell(currentCell);
             this.renderBoard();
-            this.selectedCell=null;
         }
     }
     
@@ -271,19 +327,104 @@ class Siam{
             }
         }
     }
+
+    getPlayer(){
+        for (let i=0;i<this.players.length;i++){
+            if (this.players[i].id==id_player) return this.players[i];
+        }
+        console.error("Wrong id_player provided");
+        return null;
+    }
+
+    getOtherPlayer(){
+        for (let i=0;i<this.players.length;i++){
+            if (this.players[i].id!=id_player) return this.players[i];
+        }
+    }
+
+    assignTemporaryPosition(currentCell){
+        if (currentCell.row==currentCell.column){
+            this.selectedCell.temporaryCorner(currentCell.row,currentCell.column);
+        }
+        else{
+            this.selectedCell.temporaryPos(currentCell.row,currentCell.column);
+        }
+    }
+
+    canAddPiece(currentCell){
+        if ((currentCell.row == 0 || currentCell.row == BOARD_SIZE-1 || currentCell.column == 0 || currentCell.column == BOARD_SIZE-1) && this.assignTemporaryPosition(currentCell) && this.canPush(currentCell)){
+            return true;
+        }
+        return false;
+    }
+
+    addPiece(){
+        let tempPlayer=this.getPlayer(id_player);
+        if (tempPlayer==null) return;
+        if (tempPlayer.reservedPiece>0 && !tempPlayer.isAddingPiece){
+            tempPlayer.isAddingPiece=true;
+            this.selectedCell=new Cell(tempPlayer.typePiece,Direction.DOWN,id_player,undefined,undefined);
+        }
+    }
+
+    cancel(){
+        this.selectedCell=null;
+        let player=game.getPlayer();
+        player.isAddingPiece=false;
+        this.moveDone=false;
+        getGameboardData(this);
+    }
+    
+    rotateSelectedPiece(){
+        if (this.selectedCell!=null){
+            this.selectedCell.rotate();
+            this.renderBoard();        }
+    }
+
+    endTurn(){
+        //this.playerTurn=this.getOtherPlayer();
+        this.moveDone=false;
+        this.selectedCell=null;
+        sendGameboard();
+    }
 }
 
 const game=new Siam();
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    getGameboard();
+    getGameboardData(game);
+    getPlayerData(game);
 
     const cells=document.querySelectorAll('.cell');
 
     cells.forEach(cell=>{
-        cell.addEventListener('click',() => {
+        cell.addEventListener('click',() => { 
             game.movePiece(cell.getAttribute('data-row'),cell.getAttribute('data-col'));
         });
+    })
+
+    const addbutton=document.getElementById("addpiece");
+    addbutton.addEventListener('click',(e)=>{
+        e.preventDefault();
+        game.addPiece();
+    })
+
+    const cancelbutton=document.getElementById("cancel");
+    cancelbutton.addEventListener('click',(e)=>{
+        e.preventDefault();
+        game.cancel();
+    })
+
+    const rotatebutton=document.getElementById("rotate");
+    rotatebutton.addEventListener('click',(e)=>{
+        e.preventDefault();
+        game.rotateSelectedPiece();
+    })
+
+    const endbutton=document.getElementById("endturn");
+    endbutton.addEventListener('click',(e)=>{
+        e.preventDefault();
+        game.endTurn();
     })
 });
