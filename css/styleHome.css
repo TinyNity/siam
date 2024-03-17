@@ -39,11 +39,9 @@ body {
 .buttons-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    /* Adjust the button size as needed */
     gap: 10px;
     margin-top: 20px;
     max-width: 800px;
-    /* Set a maximum width for the button container */
     width: 100%;
 }
 
@@ -51,10 +49,8 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     width: 100%;
-    /* Make buttons take the full width of the grid cell */
 }
 
-/* Styling for the dropdown */
 #dropdownMenu {
     text-align: center;
     appearance: none;
@@ -66,19 +62,16 @@ button {
     cursor: pointer;
 }
 
-/* Styling for the dropdown options */
 #dropdownMenu option {
     background-color: rgb(48, 33, 81);
     color: white;
 }
 
-/* Highlight on hover */
 #dropdownMenu:hover {
     background-color: rgb(68, 53, 101);
     border: 1px solid rgb(68, 53, 101);
 }
 
-/* Styling for the ribbon */
 .ribbon {
     background-color: rgb(48, 33, 81);
     padding: 10px;
@@ -94,7 +87,6 @@ button {
 }
 
 #dropdownMenu:after {
-    /* content: '▼'; */
     font-size: 12px;
     position: absolute;
     top: 50%;
@@ -113,6 +105,12 @@ button {
     display: flex;
 }
 
+input {
+    width: 200px;
+    padding: 6px; 
+    margin:20px;
+}
+
 #games {
     flex: 2;
     margin-right: 20px;
@@ -127,4 +125,20 @@ button {
 h3 {
     text-align: center;
     font-size: 24pt;
+}
+
+table,
+th,
+td,
+tr {
+    margin: 10px;
+    border: 1px white;
+    border-collapse: collapse;
+}
+th,
+td,
+tr {
+    border: 1px solid white;
+    text-align: center;
+    padding: 10px 50px;
 }

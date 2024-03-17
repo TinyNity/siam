@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <?php
-//! AUTH PAGE
 
 include_once "dbInterface.php";
 include_once "utils.php";

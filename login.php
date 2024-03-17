@@ -3,9 +3,9 @@
 //! LOGIN PAGE
 setcookie("username", "", 60 * 60 * 24); // 24 hours
 
-include_once "dbInterface.php";
-include_once "utils.php";
-include_once "auth.php";
+include_once "php/dbInterface.php";
+include_once "php/utils.php";
+include_once "php/auth.php";
 
 if (isset($_POST['loginForm']) and $_SERVER["REQUEST_METHOD"] == "POST") {
     $data = [];
@@ -28,8 +28,8 @@ if (isset($_POST['loginForm']) and $_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styleLogin.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styleLogin.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIAM - Login</title>
 </head>

@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include_once "dbInterface.php";
+    include_once "php/dbInterface.php";
     if ($_SERVER["REQUEST_METHOD"]==="GET"){
         $dbInterface=DbInterface::getInstance();
         $gameboard=$dbInterface->getGameboard($_SESSION["id_game"]);

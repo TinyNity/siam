@@ -2,9 +2,9 @@
 <?php
 //! LOGIN PAGE
 
-include_once "dbInterface.php";
-include_once "utils.php";
-include_once "auth.php";
+include_once "php/dbInterface.php";
+include_once "php/utils.php";
+include_once "php/auth.php";
 
 if (isset($_POST['registerForm'])) {
     error_log($_POST['password']);error_log($_POST['password2']);
@@ -28,7 +28,7 @@ if (isset($_POST['registerForm'])) {
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styleLogin.css">
+    <link rel="stylesheet" href="css/styleLogin.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIAM - Register</title>
 </head>

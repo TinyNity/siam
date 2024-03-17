@@ -2,11 +2,12 @@
 <?php
 //! HOME PAGE FOR LOGGED IN USERS
 
-include_once "dbInterface.php";
-include_once "utils.php";
+include_once "php/dbInterface.php";
+include_once "php/utils.php";
+session_start();
 
-if (isset($_COOKIE["username"])) {
-    error_log("User cookie is set as " . $_COOKIE["username"] );
+if (isset ($_COOKIE["username"])) {
+    error_log("User cookie is set as " . $_COOKIE["username"]);
     $username = $_COOKIE["username"];
 } else {
     error_log("User cookie is not set");
@@ -18,12 +19,13 @@ if (isset($_COOKIE["username"])) {
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styleHome.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styleHome.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="scriptHome.js" defer></script>
+    <script src="scripts/scriptHome.js" defer></script>
     <title>SIAM - Home</title>
 </head>
+
 <body>
     <div class="ribbon">
         <p>You're logged in as </p>
@@ -31,8 +33,9 @@ if (isset($_COOKIE["username"])) {
             <select id="dropdownMenu" onchange="handleDropdownChange(this)">
                 <option value="disconnect">Disconnect</option>
                 <option value="changePassword">Change Password</option>
-                <option value="adminDashboard">Admin Dashboard</option>
-                <option value="" disabled selected><?php echo $username; ?></option>
+                <option value="" disabled selected>
+                    <?php echo $username; ?>
+                </option>
             </select>
         </form>
     </div>
@@ -45,36 +48,45 @@ if (isset($_COOKIE["username"])) {
                 <hr>
                 <?php
                 $db = DBInterface::getInstance();
+                error_log("Fetching games now.");
                 $data = $db->fetchGames();
-                foreach ($data as $key => $value) {
-                    echo '
-            <div class="game">
-                ';
-                    echo '<p style="display:inline-block;"> ';
-                    echo $data[$key]["status"]. " </p>";
-                    //? Username color
-                    echo '
-                <p style="display:inline-block">';
-                    echo $data[$key]["nb_player"]. " :";
-                    echo "</p>";
-
-                    echo '
-                <p style="display:inline-block;">';
-                    echo $data[$key]["current_player_turn"];
-                    echo "</p>";
-                    echo '
-            </div>
-                    ';
-                }
                 ?>
+                <table>
+                    <tr> 
+                        <th>  ID  </th>
+                        <th>Status</th>
+                        <th>Number of players</th>
+                        <th>Current player turn</th>
+                        <th>Wanna join ?</th>
+                    </tr>
+            
+                <?php foreach ($data as $key => $value): ?>
+                    <tr> 
+                        <td><?php echo $data[$key]["id"]; ?></td>
+                        <td><?php echo $data[$key]["status"]; ?></td>
+                        <td><?php echo $data[$key]["nb_player"]; ?></td>
+                        <td><?php echo $data[$key]["current_player_turn"]; ?></td>
+                        <td>
+                            <form action="/php/PLACEHOLDERjoinGame.php" method="post">
+                                <input type="hidden" name="gameID" value="<?php echo $data[$key]["id"]; ?>">
+                                <input type="submit" value="Join" name="JoinForm">
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </table>
             </div>
             <div class="buttons-container">
-                <button>Button 1</button>
-                <button>Button 2</button>
-                <button>Button 3</button>
-                <button>Button 4</button>
+                <form action="php/testCreateGame.php" method="post">
+                    <input type="submit" value="Create a game">
+                </form>
             </div>
         </div>
     </div>
 </body>
+
 </html>
+
+<!-- - Mettre testCreateGame.php sur un bouton de la page 
+- Afficher la liste des games
+en vrai si tu peux t'occuper de mettre la création de game sur l'un des boutons de la home page (y'a le script testCreateGame.php qui le fait déjà mais juste mettre le code dans la home page quoi) + s'occuper de montrer la liste de parties ça serait bon -->

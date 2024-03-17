@@ -2,9 +2,9 @@
 <?php
 //! PAGE TO CHANGE PASSWORD 
 
-include_once "dbInterface.php";
-include_once "utils.php";
-include_once "auth.php";
+include_once "php/dbInterface.php";
+include_once "php/utils.php";
+include_once "php/auth.php";
 
 if (isset($_POST['changePasswordForm'])) {
     error_log($_POST['newPassword']);
@@ -36,10 +36,10 @@ if (isset($_COOKIE["username"])) {
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styleLogin.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styleLogin.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="scriptHome.js" defer></script>
+    <script src="scripts/scriptHome.js" defer></script>
     <title>SIAM - Home</title>
 </head>
 
