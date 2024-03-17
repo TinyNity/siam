@@ -113,7 +113,7 @@ input {
 
 #games {
     flex: 2;
-    margin-right: 20px;
+    margin-right: 6px;
 }
 
 .buttons-container {
@@ -127,11 +127,8 @@ h3 {
     font-size: 24pt;
 }
 
-table,
-th,
-td,
-tr {
-    margin: 10px;
+table{
+    margin: auto auto;
     border: 1px white;
     border-collapse: collapse;
 }
