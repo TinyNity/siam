@@ -1,6 +1,7 @@
 const BOARD_SIZE = 5;
 const MAX_PLAYER = 2;
 const id_player = parseInt(document.getElementById("id_player").value);
+
 //? Ajax functions
 
 function getGameData(targetGame) {
@@ -55,7 +56,7 @@ function sendGameboard() {
 
 function sendGameboardCell(cell) {
     $.ajax({
-        url: 'updateGameboardCell.php',
+        url: 'php/updateGameboardCell.php',
         type: "POST",
         data: {
             row: cell.row,
@@ -368,7 +369,6 @@ class Siam {
         for (let i = 0; i < this.players.length; i++) {
             if (this.players[i].id == id_player) return this.players[i];
         }
-        console.error("Wrong id_player provided");
         return null;
     }
 
@@ -392,6 +392,9 @@ class Siam {
     }
 
     addPiece() {
+        if (this.status!=GameStatus.STARTED){
+            return;
+        }
         let player = this.getPlayer(id_player);
         if (player == null || this.moveDone) return;
         if (player.reservedPiece > 0 && !player.isAddingPiece) {
@@ -402,6 +405,9 @@ class Siam {
     }
 
     cancel() {
+        if (this.status!=GameStatus.STARTED){
+            return;
+        }
         this.selectedCell = null;
         this.getPlayer().isAddingPiece = false;
         this.moveDone = false;
@@ -410,6 +416,9 @@ class Siam {
     }
 
     rotateSelectedPiece() {
+        if (this.status!=GameStatus.STARTED){
+            return;
+        }
         if (this.selectedCell != null && !this.pushDone) {
             this.selectedCell.rotate();
             this.renderBoard();
@@ -417,7 +426,10 @@ class Siam {
     }
 
     endTurn() {
-        //this.playerTurn=this.getOtherPlayer();
+        if (this.status!=GameStatus.STARTED){
+            return;
+        }
+        this.playerTurn=this.getOtherPlayer();
         this.moveDone = false;
         this.pushDone = false;
         this.selectedCell = null;
@@ -429,9 +441,9 @@ const game = new Siam();
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    getGameboardData(game);
-    getPlayerData(game);
     getGameData(game);
+    getPlayerData(game);
+    getGameboardData(game);
 
     const cells = document.querySelectorAll('.cell');
 

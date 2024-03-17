@@ -6,9 +6,9 @@ include_once "php/dbInterface.php";
 include_once "php/utils.php";
 
 $dbInterface = DbInterface::getInstance();
-if (isset ($_GET["id_game"]) && isset ($_GET["id_player"]) && $dbInterface->checkUserIsPlayer($_COOKIE["username"], $_GET["id_player"]) && $dbInterface->checkPlayerInGame($_GET["id_player"], $_GET["id_game"])) {
-    $_SESSION["id_game"] = $_GET["id_game"];
-} else {
+error_log($_SESSION["id_game"]);
+error_log($_SESSION["id_player"]);
+if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterface->checkUserIsPlayer($_COOKIE["username"], $_SESSION["id_player"]) || !$dbInterface->checkPlayerInGame($_SESSION["id_player"], $_SESSION["id_game"])) {
     redirect("home.php");
 }
 ?>
@@ -22,12 +22,12 @@ if (isset ($_GET["id_game"]) && isset ($_GET["id_player"]) && $dbInterface->chec
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Siam game</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script defer src="siamLogic.js"></script>
+    <script defer src="scripts/siamLogic.js"></script>
 </head>
 
 <body>
     <form>
-        <input type="hidden" id="id_player" value="<?php echo $_GET["id_player"] ?>">
+        <input type="hidden" id="id_player" value="<?php echo $_SESSION["id_player"] ?>">
     </form>
     <div class="game-container">
         <div class="gameboard">

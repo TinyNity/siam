@@ -22,6 +22,7 @@ ini_set('error_log', './error.log');
 
 //? Constant value for the cookies expiry time
 define('EXPIRYDATE', time() + (3600 * 24 * 60));
+define('PARENTPATH',dirname(__DIR__));
 
 //? Use a header to redirect the client to a url given in parameter with an optional status code
 function redirect(string $url, bool $die = true, int $statusCode = 303) { // Redirect HTTP code

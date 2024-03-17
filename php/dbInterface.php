@@ -11,7 +11,7 @@ class DbInterface {
     }
 
     private function init() : void {
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         $DBExistenceQuery = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
         if (! ($DBExistenceQuery && $DBExistenceQuery->fetchArray())) {
             try {
@@ -86,7 +86,7 @@ class DbInterface {
     }
 
     public function checkUserExistence(String $username) : bool {
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         error_log("Checking " . $username);
         $pQuery = $db->prepare("
             SELECT username FROM users c
@@ -109,7 +109,7 @@ class DbInterface {
     }
 
     public function checkGameExistence(int $id_game) : bool {
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         error_log("Checking game " . $id_game);
         $pQuery = $db->prepare("
             SELECT id FROM games c
@@ -132,7 +132,7 @@ class DbInterface {
     }
 
     public function checkPlayerExistence(int $id_player):bool{
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         error_log("Checking player ".$id_player);
         $pQuery = $db->prepare("
             SELECT id FROM players c
@@ -155,7 +155,7 @@ class DbInterface {
     }
 
     public function checkPlayerInGame(int $id_player,int $id_game):bool{
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         if (!$this->checkGameExistence($id_game)){
             error_log(EStatus::NOGAME);
             $db->close();
@@ -186,7 +186,7 @@ class DbInterface {
     }
 
     public function checkUserIsPlayer(String $username, int $id_player) : bool {
-        $db=new  SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new  SQLite3(PARENTPATH."/db.sqlite");
         if (!$this->checkUserExistence($username)){
             error_log(EStatus::NOUSER);
             $db->close();
@@ -223,7 +223,7 @@ class DbInterface {
         return $status;
     }
     public function createPiecesData(){
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
                             INSERT INTO pieces(piece_name)
                             VALUES (:piece_name)
@@ -242,7 +242,7 @@ class DbInterface {
     }
 
     public function registerAccount(String $username, String $password, bool $admin = false) : String {
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         if ($this->checkUserExistence($username)) { //? User is in database, can't create a new account with the same username
             return EStatus::USERINDB;
         }
@@ -265,7 +265,7 @@ class DbInterface {
     }
 
     public function loginUser(String $username, String $password) : String {
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         if (!$this->checkUserExistence($username)) { //? Can't log in to an unregistered account
             return EStatus::NOUSER;
         }
@@ -287,7 +287,7 @@ class DbInterface {
 
     public function changePassword(String $username, String $newPassword) : String {
         error_log("Changing $username's password to $newPassword..");
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         if (!$this->checkUserExistence($username)) { //? Can't access an unregistered account
             return EStatus::NOUSER;
         }
@@ -311,7 +311,7 @@ class DbInterface {
         if (!$this->checkUserExistence($username)){ //? Can't create a game if the user doesn't exist
             return EStatus::NOUSER;
         }
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
                             INSERT INTO games (status,nb_player,current_player_turn)
                             VALUES (:status,0,null) 
@@ -334,14 +334,16 @@ class DbInterface {
         }
     }
 
-    public function addPlayerToGame(String $username, int $id_game) : string {
+    public function addPlayerToGame(String $username, int $id_game) : int {
         if (!$this->checkGameExistence($id_game)){
-            return EStatus::NOGAME;
+            error_log(EStatus::NOGAME);
+            return -1;
         }
         if ($this->isGameFull($id_game)){
-            return EStatus::GAMEISFULL;
+            error_log(EStatus::GAMEISFULL);
+            return -1;
         }
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $useridQuery=$db->prepare("SELECT id FROM users WHERE username=:username");
         $useridQuery->bindParam(":username",$username,SQLITE3_TEXT);
         $result=$useridQuery->execute();
@@ -355,12 +357,17 @@ class DbInterface {
         $pQuery->bindParam(":id_game",$id_game);
         $pQuery->execute();
         $db->query("UPDATE games SET nb_player=nb_player + 1 WHERE id = $id_game");
+        $player=$db->lastInsertRowID();
         $db->close();
-        return EStatus::PLAYERADDED;
+        if ($this->isGameFull($id_game)){
+            $this->startGame($id_game);
+        }
+        error_log(EStatus::PLAYERADDED);
+        return $player;
     }
 
     public function isGameFull(int $id_game) : bool {
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("SELECT nb_player FROM games WHERE id=:id_game");
         $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
         $result=$pQuery->execute();
@@ -374,7 +381,7 @@ class DbInterface {
     
 
     public function createGameBoard(int $id_game) : string {
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         
         $pQuery=$db->prepare("
                             INSERT INTO gameboard_cell(row,column,direction,id_player,id_piece,id_game)
@@ -410,7 +417,7 @@ class DbInterface {
             error_log(EStatus::NOGAME);
             return $gameboardData;
         }
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
                             SELECT * FROM gameboard_cell
                             WHERE id_game=:id_game
@@ -433,7 +440,7 @@ class DbInterface {
             return EStatus::NOGAME;
         }
         error_log("Trying to update gameboard of game ".$id_game);
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
                         UPDATE gameboard_cell 
                         SET id_piece=:id_piece, id_player=:id_player,direction=:direction
@@ -454,14 +461,14 @@ class DbInterface {
         return EStatus::GAMEBOARDUPDATED;
     }
 
-    function getPlayer(int $id_game) : array{
+    function getPlayers(int $id_game) : array{
         $players=array();
         if(!$this->checkGameExistence($id_game)){
             error_log(EStatus::NOGAME);
             return $players;
         }
-        error_log("Trying to get player of game ".$id_game);
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        error_log("Trying to get players of game ".$id_game);
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
                             SELECT * FROM players WHERE id_game=:id_game
                             ");
@@ -481,6 +488,40 @@ class DbInterface {
         return $players;
     }
 
+    function getPlayerFromUser(int $id_game,string $username) : int {
+        if (!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            return -1;
+        }
+
+        if (!$this->checkUserExistence($username)){
+            error_log(EStatus::NOUSER);
+            return -1;
+        }
+
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
+        $pQuery=$db->prepare("
+                SELECT p.id 
+                FROM players p
+                INNER JOIN users u
+                    on p.id_user = u.id
+                WHERE
+                    u.username=:username AND p.id_game=:id_game
+        ");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $pQuery->bindParam(":username",$username,SQLITE3_TEXT);
+        $result=$pQuery->execute();
+        if (!$result){
+            return -1;
+        }
+        $player=$result->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        if ($player["id"]==null){
+            return 0;
+        }
+        return $player["id"];
+    }
+
     function getGameData(int $id_game) : array{
         $game=array();
         if(!$this->checkGameExistence($id_game)){
@@ -488,7 +529,7 @@ class DbInterface {
             return $game;
         }
         
-        $db=new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
                             SELECT * FROM games WHERE id=:id_game
                             ");
@@ -501,7 +542,7 @@ class DbInterface {
     }
 
     function fetchGames() : array {
-        $db = new SQLite3(dirname(__DIR__)."/db.sqlite");
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
         $query = $db->query("
             SELECT * FROM games
             ORDER BY id ASC
@@ -518,5 +559,22 @@ class DbInterface {
         }
         $db->close();
         return $ret;
+    }
+
+    function startGame($id_game){
+        if (!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            return;
+        }
+        $players=$this->getPlayers($id_game);
+        $coin=random_int(0,1);
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
+        $pQuery=$db->prepare("UPDATE games SET status=:status, current_player_turn=:player WHERE id=:id_game");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $pQuery->bindParam(":player",$players[$coin]["id"],SQLITE3_INTEGER);
+        $status=GameStatus::STARTED;
+        $pQuery->bindParam(":status",$status,SQLITE3_INTEGER);
+        $pQuery->execute();
+        $db->close();
     }
 }

@@ -29,7 +29,7 @@ div.gameboard{
 }
 
 table.board-container{
-    background-image: url("assets/plateau.jpg");
+    background-image: url("/siam/assets/plateau.jpg");
     background-size: cover;
     padding: 20px;
     width: 500px;
