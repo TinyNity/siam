@@ -86,7 +86,3 @@ if (isset ($_COOKIE["username"])) {
 </body>
 
 </html>
-
-<!-- - Mettre testCreateGame.php sur un bouton de la page 
-- Afficher la liste des games
-en vrai si tu peux t'occuper de mettre la création de game sur l'un des boutons de la home page (y'a le script testCreateGame.php qui le fait déjà mais juste mettre le code dans la home page quoi) + s'occuper de montrer la liste de parties ça serait bon -->

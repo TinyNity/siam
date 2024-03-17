@@ -71,7 +71,7 @@ class DbInterface {
                 
                 $this->createPiecesData();
             } catch (Exception $exception) {
-                echo $exception->getMessage();
+                error_log($exception->getMessage());
             } finally {
                 $db->close();
             }
@@ -257,7 +257,7 @@ class DbInterface {
             $pQuery->execute();
             return EStatus::USERCREATED;
         } catch (Exception $e) {
-            echo $e->getMessage();
+            error_log($e->getMessage());
             return false;
         } finally {
             $db->close();
@@ -327,7 +327,7 @@ class DbInterface {
             error_log("createGame status 2 : $status");
             return EStatus::GAMECREATED;
         } catch (Exception $e) {
-            echo $e->getMessage();
+            error_log($e->getMessage());
             return false;
         } finally {
             $db->close();
@@ -549,12 +549,11 @@ class DbInterface {
         ");
     
         if (! $query) {
-            echo "[-] :" . $db->lastErrorMsg();
+            error_log( "[-] :" . $db->lastErrorMsg());
             return [];
         }
         $ret = [];
         while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
-            echo print_r($row);
             $ret[] = $row;
         }
         $db->close();
