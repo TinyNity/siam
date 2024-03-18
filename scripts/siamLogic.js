@@ -288,6 +288,7 @@ class Siam {
     }
 
     initPlayer(playerData) {
+        this.players=[];
         for (let i = 0; i < Math.min(playerData.length, MAX_PLAYER); i++) {
             let tempPlayer = new Player(playerData[i].id, playerData[i].reserved_piece, playerData[i].id_piece,playerData[i].username);
             this.players.push(tempPlayer);
@@ -355,6 +356,12 @@ class Siam {
     getPlayerByPiece(piece){
         for (let i=0;i<this.players.length;i++){
             if (this.players[i].typePiece==piece) return this.players[i];
+        }
+    }
+
+    getPlayerByID(id){
+        for (let i=0;i<this.players.length;i++){
+            if (this.players[i].id==id) return this.players[i];
         }
     }
 
@@ -498,7 +505,7 @@ class Siam {
             turn.innerText="Draw";
         }
         else if (this.status==GameStatus.FINISHEDWIN){
-            turn.innerText+=" won!";
+            turn.innerText=this.getPlayerByID(this.winner).username+" won!";
         }
     }
 
@@ -585,10 +592,13 @@ const game = new Siam();
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    getGameData(game);
-    getPlayerData(game);
-    getGameboardData(game);
-    game.renderBoard();
+    function getData(){
+        getGameData(game);
+        getPlayerData(game);
+        getGameboardData(game);
+        game.renderBoard();
+    }
+    getData();
     const cells = document.querySelectorAll('.cell');
 
     cells.forEach(cell => {
@@ -620,4 +630,11 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         game.endTurn();
     })
+
+    setInterval(function(){
+        if (game.playerTurn!=id_player){
+            getData();
+        }
+    },2000);
+    
 });

@@ -10,6 +10,12 @@ function handleDropdownChange(dropdown) {
         case "adminDashboard":
             window.location.href = "./adminDashboard.php";
             break;
+        case "history":
+            window.location.href = "./gameHistory.php";
+            break;
+        case "home":
+            window.location.href="./home.php";
+            break;
         default:
             break;
     }

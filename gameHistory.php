@@ -14,7 +14,7 @@ if (isset ($_COOKIE["username"])) {
     $username = $_COOKIE["username"];
 } else {
     error_log("User cookie is not set");
-    redirect("./login.php");    
+    redirect("./login.php");
 }
 
 ?>
@@ -26,7 +26,7 @@ if (isset ($_COOKIE["username"])) {
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="scripts/scriptRibbon.js" defer></script>
-    <title>SIAM - Home</title>
+    <title>SIAM - Game History</title>
 </head>
 
 <body>
@@ -36,30 +36,29 @@ if (isset ($_COOKIE["username"])) {
             <select id="dropdownMenu" onchange="handleDropdownChange(this)">
                 <option value="disconnect">Disconnect</option>
                 <option value="changePassword">Change Password</option>
-                <option value="history">Game history</option>
+                <option value= "home">Home</option>
                 <option value="" disabled selected>
                     <?php echo $username; ?>
                 </option>
             </select>
         </form>
     </div>
-    <h1>Siam - Home</h1>
+    <h1>Siam</h1>
     <hr>
     <div id="content">
         <div id="container">
             <div id="games">
-                <h3>Games</h3>
+                <h3>Game history</h3>
                 <hr>
                 <?php
                 error_log("Fetching games now.");
-                $data = $dbInterface->fetchGames(GameStatus::NOTSTARTED);
+                $data = $dbInterface->fetchGamesUser($_COOKIE["username"],GameStatus::FINISHEDDRAW,GameStatus::FINISHEDWIN);
                 ?>
                 <table>
                     <tr> 
                         <th>  ID  </th>
                         <th>Status</th>
-                        <th>Number of players</th>
-                        <th>Wanna join ?</th>
+                    
                     </tr>
             
                 <?php foreach ($data as $key => $value): ?>
@@ -73,7 +72,7 @@ if (isset ($_COOKIE["username"])) {
                                     echo "Started";
                                     break;
                                 case GameStatus::FINISHEDWIN :
-                                    echo "Winner:".$data[$key]["winner"];
+                                    echo "Winner: ".$dbInterface->getUserFromPlayer($data[$key]["winner"]);
                                     break;
                                 case GameStatus::FINISHEDDRAW :
                                     echo "Draw";
@@ -81,50 +80,18 @@ if (isset ($_COOKIE["username"])) {
                                 default:
                                     break;
                                 } ?></td>
-                        <td><?php echo $data[$key]["nb_player"]."/2"; ?></td>
                         <td>
                             <form action="php/PLACEHOLDERjoinGame.php" method="post">
                                 <input type="hidden" name="id_game" value="<?php echo $data[$key]["id"]; ?>">
-                                <input type="submit" value="Join" name="JoinForm">
+                                <input type="submit" value="Look final state" name="JoinForm">
                             </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 </table>
             </div>
-            <div class="buttons-container">
-                <div class="buttons-container">
-                    <form action="php/testCreateGame.php" method="post">
-                        <input type="submit" name="createGame" value="Create a game">
-                    </form>
-                </div>
-                <h3>Current Games</h3>
-                <hr>
-                <?php
-                error_log("Fetching games now.");
-                $data = $dbInterface->fetchGamesUser($_COOKIE["username"],GameStatus::STARTED);
-                ?>
-                <table>
-                    <tr> 
-                        <th>  ID  </th>
-                        <th>Current player</th>
-                       
-                    </tr>
-                <?php foreach ($data as $key => $value): ?>
-                    <tr> 
-                        <td><?php echo $data[$key]["id"]; ?></td>
-                        <td><?php if ($data[$key]["current_player_turn"]!=null){
-                                    echo $dbInterface->getUserFromPlayer($data[$key]["current_player_turn"]);
-                                } ?></td>
-                        <td>
-                            <form action="php/PLACEHOLDERjoinGame.php" method="post">
-                                <input type="hidden" name="id_game" value="<?php echo $data[$key]["id"]; ?>">
-                                <input type="submit" value="Join" name="JoinForm">
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </table>
+            <div>
+                <p>Winrate : </p>
             </div>
         </div>
     </div>

@@ -494,6 +494,26 @@ class DbInterface {
         return $players;
     }
 
+    function getUserFromPlayer(int $id_player){
+        if (!$this->checkPlayerExistence($id_player)){
+            error_log(EStatus::NOPLAYER);
+            return;
+        }
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
+        $pQuery=$db->prepare("
+                    SELECT u.username
+                    FROM users u
+                    INNER JOIN players p
+                        ON p.id_user=u.id
+                    WHERE
+                        p.id=:id_player");
+        $pQuery->bindParam(":id_player",$id_player,SQLITE3_INTEGER);
+        $result=$pQuery->execute();
+        $username=$result->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        return $username["username"];
+    }
+
     function getPlayerFromUser(int $id_game,string $username) : int {
         if (!$this->checkGameExistence($id_game)){
             error_log(EStatus::NOGAME);
@@ -547,10 +567,65 @@ class DbInterface {
         return $game;
     }
 
-    function fetchGames() : array {
+
+    function fetchGames($status) : array {
         $db = new SQLite3(PARENTPATH."/db.sqlite");
+
         $query = $db->query("
-            SELECT * FROM games
+            SELECT g.* 
+            FROM games g
+            INNER JOIN players p
+                ON g.id=p.id_game
+            WHERE g.status=$status
+            ORDER BY id ASC
+        ");
+    
+        if (! $query) {
+            error_log( "[-] :" . $db->lastErrorMsg());
+            return [];
+        }
+        $ret = [];
+        while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
+            $ret[] = $row;
+        }
+        $db->close();
+        return $ret;
+    }
+
+    function getUser($username){
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
+
+        $pQuery=$db->prepare("
+                            SELECT id 
+                            FROM users 
+                            WHERE username=:username
+                            ");
+        $pQuery->bindParam(":username",$username,SQLITE3_TEXT);
+        $res=$pQuery->execute();
+        if (!$res){
+            error_log("[-] :".$db->lastErrorMsg());
+            return -1;
+        }
+
+        $ret=$res->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        return $ret["id"];
+    }
+
+    function fetchGamesUser($username,...$statuses) : array {
+        $id_user=$this->getUser($username);
+
+        $db = new SQLite3(PARENTPATH."/db.sqlite");
+        $whereClause = '';
+        if (!empty($statuses)) {
+            $whereClause = "WHERE status IN (" . implode(',', $statuses) . ")";
+        }
+        $query = $db->query("
+            SELECT g.*
+            FROM games g
+            INNER JOIN players p
+                ON g.id=p.id_game
+            $whereClause AND p.id_user=$id_user
             ORDER BY id ASC
         ");
     

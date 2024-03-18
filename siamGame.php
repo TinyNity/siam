@@ -4,11 +4,11 @@ const BOARD_SIZE = 5;
 session_start();
 include_once "php/dbInterface.php";
 include_once "php/utils.php";
-
+$username=$_COOKIE["username"];
 $dbInterface = DbInterface::getInstance();
 error_log($_SESSION["id_game"]);
 error_log($_SESSION["id_player"]);
-if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterface->checkUserIsPlayer($_COOKIE["username"], $_SESSION["id_player"]) || !$dbInterface->checkPlayerInGame($_SESSION["id_player"], $_SESSION["id_game"])) {
+if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterface->checkUserIsPlayer($username, $_SESSION["id_player"]) || !$dbInterface->checkPlayerInGame($_SESSION["id_player"], $_SESSION["id_game"])) {
     redirect("home.php");
 }
 ?>
@@ -23,9 +23,24 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
     <title>Siam game</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script defer src="scripts/siamLogic.js"></script>
+    <script defer src="scripts/scriptRibbon.js"></script>
 </head>
 
 <body>
+    <div class="ribbon">
+        <p>You're logged in as </p>
+        <form id="dcForm" action="./logout.php">
+            <select id="dropdownMenu" onchange="handleDropdownChange(this)">
+                <option value="disconnect">Disconnect</option>
+                <option value="changePassword">Change Password</option>
+                <option value="history">Game history</option>
+                <option value="home">Home</option>
+                <option value="" disabled selected>
+                    <?php echo $username; ?>
+                </option>
+            </select>
+        </form>
+    </div>
     <form>
         <input type="hidden" id="id_player" value="<?php echo $_SESSION["id_player"] ?>">
     </form>
