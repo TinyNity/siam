@@ -8,6 +8,7 @@ function getGameData(targetGame) {
     $.ajax({
         url: 'sendGame.php',
         type: 'GET',
+        async:false,
         dataType: 'json',
         success: function (data) {
             targetGame.initGame(data);
@@ -22,6 +23,7 @@ function getPlayerData(targetGame) {
     $.ajax({
         url: 'sendPlayer.php',
         type: 'GET',
+        async:false,
         dataType: 'json',
         success: function (data) {
             targetGame.initPlayer(data);
@@ -36,6 +38,7 @@ function getGameboardData(targetGame) {
     $.ajax({
         url: 'sendGameboard.php',
         type: "GET",
+        async:false,
         dataType: "json",
         success: function (data) {
             targetGame.initGameboard(data);
@@ -46,10 +49,39 @@ function getGameboardData(targetGame) {
     })
 }
 
-function sendGameboard() {
+function sendPlayerData(targetPlayer){
+    $.ajax({
+        url:'php/updatePlayerData.php',
+        type:"POST",
+        data : {
+            id_player: targetPlayer.id,
+            reserved_piece:targetPlayer.reservedPiece
+        },
+        error: function(xhr,status,error){
+            console.error(error);
+        }
+    })
+}
+
+function sendGameStatus(targetGame){
+    $.ajax({
+        url: 'php/updateGameStatus.php',
+        type:"POST",
+        data : {
+            current_player_turn: targetGame.playerTurn,
+            status: targetGame.status,
+            winner: targetGame.winner
+        },
+        error: function(xhr,status,error){
+            console.error(error);
+        }
+    })
+}
+
+function sendGameboard(targetGame) {
     for (let i = 0; i < BOARD_SIZE; i++) {
         for (let j = 0; j < BOARD_SIZE; j++) {
-            sendGameboardCell(game.gameboard[i][j]);
+            sendGameboardCell(targetGame.gameboard[i][j]);
         }
     }
 }
@@ -68,14 +100,28 @@ function sendGameboardCell(cell) {
         error: function (xhr, status, error) {
             console.error(error);
         }
-
     })
+}
+
+function addNeighbors(file,cell,gameboard){
+    let row=cell.row;
+    let column=cell.column;
+    for (let i=0;i<=3;i++){
+        tempRow=row+Direction.getDirectionRow(i);
+        tempColumn=column+Direction.getDirectionColumn(i);
+        if (tempRow>=0 && tempRow<BOARD_SIZE && tempColumn>=0 && tempColumn<BOARD_SIZE){
+            tempCell=gameboard[tempRow][tempColumn];
+            file.push(tempCell);
+        }
+    }
+    return file;
 }
 
 class GameStatus {
     static NOT_STARTED = 0;
     static STARTED = 1;
-    static FINISHED = 2;
+    static FINISHEDWIN = 2;
+    static FINISHEDDRAW=3;
 
 }
 
@@ -189,14 +235,31 @@ class Cell {
         }
         return false;
     }
+
+    calcDistance(baseCell){
+        let distance=0;
+        let tempRow=this.row;
+        let tempColumn=this.column;
+        while (baseCell.row!=tempRow){
+            tempRow+=(baseCell.row-tempRow<0)?(-1):(1);
+            distance++;
+        }
+
+        while (baseCell.column!=tempColumn){
+            tempColumn+=(baseCell.column-tempColumn<0)?(-1):(1);
+            distance++;
+        }
+        return distance;
+    }
 }
 
 class Player {
-    constructor(id, reservedPiece, typePiece) {
+    constructor(id, reservedPiece, typePiece,username) {
         this.id = id;
         this.reservedPiece = reservedPiece;
         this.typePiece = typePiece;
         this.isAddingPiece = false;
+        this.username=username;
     }
 }
 
@@ -209,6 +272,7 @@ class Siam {
         this.playerTurn = null;
         this.pushDone = false;
         this.status = null;
+        this.winner=null;
     }
 
     //? Function to initialize a gameboard
@@ -221,12 +285,11 @@ class Siam {
                 this.gameboard[gameboardCell.row][gameboardCell.column] = new Cell(gameboardCell.id_piece, gameboardCell.direction, gameboardCell.id_player, gameboardCell.row, gameboardCell.column);
             }
         }
-        this.renderBoard();
     }
 
     initPlayer(playerData) {
         for (let i = 0; i < Math.min(playerData.length, MAX_PLAYER); i++) {
-            let tempPlayer = new Player(playerData[i].id, playerData[i].reserved_piece, playerData[i].id_piece);
+            let tempPlayer = new Player(playerData[i].id, playerData[i].reserved_piece, playerData[i].id_piece,playerData[i].username);
             this.players.push(tempPlayer);
         }
     }
@@ -234,6 +297,7 @@ class Siam {
     initGame(gameData) {
         this.status = gameData.status;
         this.playerTurn = gameData.current_player_turn;
+        this.winner=gameData.winner;
     }
 
     //? Function to move cells in the array
@@ -257,20 +321,40 @@ class Siam {
         let pushingDirection = this.selectedCell.getMovementDirection(destinationCell);
         let rowdir = Direction.getDirectionRow(pushingDirection);
         let columndir = Direction.getDirectionColumn(pushingDirection);
-        let nextCell = destinationCell;
+        let currentCell = destinationCell;
         let tempCell;
         this.moveCell(destinationCell);
-        while (nextCell.piece != Piece.VOID) {
-            let nextRow = nextCell.row + rowdir;
-            let nextColumn = nextCell.column + columndir;
+        while (currentCell.piece != Piece.VOID) {
+            let nextRow = currentCell.row + rowdir;
+            let nextColumn = currentCell.column + columndir;
             if (nextRow < BOARD_SIZE && nextRow >= 0 && nextColumn < BOARD_SIZE && nextColumn >= 0) {
                 tempCell = this.gameboard[nextRow][nextColumn];
+                this.gameboard[nextRow][nextColumn] = currentCell.move(nextRow, nextColumn);
+                currentCell = tempCell;
             }
             else {
+                let player;
+                switch(currentCell.piece){
+                    case Piece.ROCK : 
+                        this.checkWinner(currentCell,pushingDirection);
+                        break;
+                    case Piece.ELEPHANT :
+                        player=this.getPlayerByPiece(currentCell.piece);
+                        player.reservedPiece++;
+                        break;
+                    case Piece.RHINOCEROS :
+                        player=this.getPlayerByPiece(currentCell.piece);
+                        player.reservedPiece++;
+                        break;
+                }
                 return;
             }
-            this.gameboard[nextRow][nextColumn] = nextCell.move(nextRow, nextColumn);
-            nextCell = tempCell;
+        }
+    }
+
+    getPlayerByPiece(piece){
+        for (let i=0;i<this.players.length;i++){
+            if (this.players[i].typePiece==piece) return this.players[i];
         }
     }
 
@@ -345,23 +429,76 @@ class Siam {
             this.pushCell(currentCell);
             this.renderBoard();
         }
+        if (this.status==GameStatus.FINISHEDWIN || this.status==GameStatus.FINISHEDDRAW){
+            this.endTurn(true);
+        }
     }
 
+    checkWinner(rockCell,pushingDirection){
+        let row=rockCell.row;
+        let column=rockCell.column;
+        let minDistance=Infinity;
+        let file=[];
+        file.push(this.gameboard[row][column]);
+        while (file.length!=0){
+            let currentCell=file.shift();
+            let tmpDist=currentCell.calcDistance(rockCell);
+            if (tmpDist>minDistance){
+                break;
+            }
+            if (currentCell.direction==pushingDirection){
+                if (this.winner==null){
+                    this.winner=currentCell.player;
+                    this.status=GameStatus.FINISHEDWIN;
+                    minDistance=tmpDist;
+                }
+                else if (this.winner!=currentCell.player){
+                    this.status=GameStatus.FINISHEDDRAW;
+                    this.winner=null;
+                    break;
+                }
+            }
+            file=addNeighbors(file,currentCell,this.gameboard);
+        }
+        return;
+    }
 
     //? Function to render the board in the page
     renderBoard() {
         for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
-                let img = document.getElementById(`image-${i}-${j}`);
+                let img = document.getElementById(`image-${i}-${j}`);   
                 this.setImage(img, this.gameboard[i][j].piece, this.gameboard[i][j].direction);
             }
         }
         let img = document.getElementById('addpiece-container');
-        if (this.getPlayer().isAddingPiece) {
+
+        if (this.getPlayer()!=null && this.getPlayer().isAddingPiece) {
             this.setImage(img, this.selectedCell.piece, this.selectedCell.direction);
         }
         else {
             this.setImage(img, Piece.VOID, Direction.DOWN);
+        }
+
+        let reservedpiece=document.getElementById('reservedpiece');
+        reservedpiece.innerText=this.getPlayer().reservedPiece;
+
+        this.renderTurn();
+    }
+
+    renderTurn(){
+        let turn=document.getElementById('playerturn');
+        if (this.playerTurn==this.getPlayer().id){
+            turn.innerText="You";
+        }
+        else {
+            turn.innerText=this.getOtherPlayer().username;
+        }
+        if (this.status==GameStatus.FINISHEDDRAW){
+            turn.innerText="Draw";
+        }
+        else if (this.status==GameStatus.FINISHEDWIN){
+            turn.innerText+=" won!";
         }
     }
 
@@ -392,11 +529,11 @@ class Siam {
     }
 
     addPiece() {
-        if (this.status!=GameStatus.STARTED){
+        if (this.status!=GameStatus.STARTED || this.playerTurn!=id_player || this.moveDone){
             return;
         }
         let player = this.getPlayer(id_player);
-        if (player == null || this.moveDone) return;
+        if (player == null) return;
         if (player.reservedPiece > 0 && !player.isAddingPiece) {
             player.isAddingPiece = true;
             this.selectedCell = new Cell(player.typePiece, Direction.DOWN, id_player, undefined, undefined);
@@ -405,7 +542,7 @@ class Siam {
     }
 
     cancel() {
-        if (this.status!=GameStatus.STARTED){
+        if (this.status!=GameStatus.STARTED || this.playerTurn!=id_player){
             return;
         }
         this.selectedCell = null;
@@ -416,7 +553,7 @@ class Siam {
     }
 
     rotateSelectedPiece() {
-        if (this.status!=GameStatus.STARTED){
+        if (this.status!=GameStatus.STARTED || this.playerTurn!=id_player){
             return;
         }
         if (this.selectedCell != null && !this.pushDone) {
@@ -425,26 +562,33 @@ class Siam {
         }
     }
 
-    endTurn() {
-        if (this.status!=GameStatus.STARTED){
+    endTurn(forceEnd=false) {
+        if ((this.status!=GameStatus.STARTED || this.playerTurn!=id_player) && (!forceEnd)){
             return;
         }
-        this.playerTurn=this.getOtherPlayer();
+        this.playerTurn=this.getOtherPlayer().id;
         this.moveDone = false;
         this.pushDone = false;
         this.selectedCell = null;
-        sendGameboard();
+        sendGameboard(this);
+        sendGameStatus(this);
+        for (let i=0;i<this.players.length;i++){
+            sendPlayerData(this.players[i]);
+        }
+        this.renderTurn();
     }
 }
 
 const game = new Siam();
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
     getGameData(game);
     getPlayerData(game);
     getGameboardData(game);
-
+    game.renderBoard();
     const cells = document.querySelectorAll('.cell');
 
     cells.forEach(cell => {

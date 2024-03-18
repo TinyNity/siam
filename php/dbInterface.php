@@ -43,7 +43,9 @@ class DbInterface {
                         status INTEGER NOT NULL,
                         nb_player INTEGER NOT NULL,
                         current_player_turn INTEGER,
-                        FOREIGN KEY(current_player_turn) REFERENCES players(id)
+                        winner INTEGER,
+                        FOREIGN KEY(current_player_turn) REFERENCES players(id),
+                        FOREIGN KEY(winner) REFERENCES players(id)
                         )
                     ");
                 
@@ -351,7 +353,7 @@ class DbInterface {
         $id_user=$row["id"];
         $pQuery=$db->prepare("
                             INSERT INTO players (reserved_piece,id_piece,id_user,id_game)
-                            VALUES (3,null,:id_user,:id_game) 
+                            VALUES (5,null,:id_user,:id_game) 
                             ");
         $pQuery->bindParam(":id_user",$id_user);
         $pQuery->bindParam(":id_game",$id_game);
@@ -470,7 +472,11 @@ class DbInterface {
         error_log("Trying to get players of game ".$id_game);
         $db=new SQLite3(PARENTPATH."/db.sqlite");
         $pQuery=$db->prepare("
-                            SELECT * FROM players WHERE id_game=:id_game
+                            SELECT p.id,p.reserved_piece,p.id_piece,u.username
+                            FROM players p
+                            INNER JOIN users u
+                                ON u.id=p.id_user
+                            WHERE id_game=:id_game
                             ");
         $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
         $result=$pQuery->execute();
@@ -568,11 +574,52 @@ class DbInterface {
         $players=$this->getPlayers($id_game);
         $coin=random_int(0,1);
         $db=new SQLite3(PARENTPATH."/db.sqlite");
-        $pQuery=$db->prepare("UPDATE games SET status=:status, current_player_turn=:player WHERE id=:id_game");
+        $pQuery=$db->prepare("UPDATE games SET status=:status, current_player_turn=:id_player WHERE id=:id_game");
         $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
-        $pQuery->bindParam(":player",$players[$coin]["id"],SQLITE3_INTEGER);
+        $pQuery->bindParam(":id_player",$players[$coin]["id"],SQLITE3_INTEGER);
         $status=GameStatus::STARTED;
         $pQuery->bindParam(":status",$status,SQLITE3_INTEGER);
+        $pQuery->execute();
+
+        $pQuery=$db->prepare("UPDATE players SET id_piece=:id_piece WHERE id=:id_player");
+        
+        for ($i=0;$i<2;$i++){
+            $piece=2+$i;
+            $pQuery->bindParam(":id_piece",$piece,SQLITE3_INTEGER);
+            $pQuery->bindParam(":id_player",$players[$i]["id"],SQLITE3_INTEGER);
+            $pQuery->execute();
+        }
+
+        $db->close();
+    }
+
+    function updateGameStatus($id_game,$status,$current_player_turn,$winner){
+        if (!$this->checkGameExistence($id_game)){
+            error_log(EStatus::NOGAME);
+            return;
+        }
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
+
+        $pQuery=$db->prepare("UPDATE games SET status=:status,winner=:winner, current_player_turn=:current_player_turn WHERE id=:id_game");
+        $pQuery->bindParam(":id_game",$id_game,SQLITE3_INTEGER);
+        $pQuery->bindParam(":status",$status,SQLITE3_INTEGER);
+        $pQuery->bindParam(":winner",$winner,SQLITE3_INTEGER);
+        $pQuery->bindParam(":current_player_turn",$current_player_turn,SQLITE3_INTEGER);
+        $pQuery->execute();
+        
+        $db->close();
+    }
+
+    function updatePlayerData($id_player,$reserved_piece){
+        if (!$this->checkPlayerExistence($id_player)){
+            error_log(EStatus::NOPLAYER);
+            return;
+        }
+
+        $db=new SQLite3(PARENTPATH."/db.sqlite");
+        $pQuery=$db->prepare("UPDATE players SET reserved_piece=:reserved_piece WHERE id=:id_player");
+        $pQuery->bindParam(":id_player",$id_player,SQLITE3_INTEGER);
+        $pQuery->bindParam(":reserved_piece",$reserved_piece,SQLITE3_INTEGER);
         $pQuery->execute();
         $db->close();
     }

@@ -16,6 +16,14 @@ div.addpiece-container{
     width:  90px;
     height: 90px;
     border: 3px solid white;
+    text-align: justify;
+    align-items: center;
+    justify-content: center;
+}
+
+div.reservedpiece-container{
+    display: inline-block;
+    text-align: justify;
     align-items: center;
     justify-content: center;
 }

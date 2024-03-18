@@ -4,6 +4,7 @@
 
 include_once "php/dbInterface.php";
 include_once "php/utils.php";
+include_once "php/EGameStatus.php";
 session_start();
 
 if (isset ($_COOKIE["username"])) {
@@ -63,7 +64,22 @@ if (isset ($_COOKIE["username"])) {
                 <?php foreach ($data as $key => $value): ?>
                     <tr> 
                         <td><?php echo $data[$key]["id"]; ?></td>
-                        <td><?php echo $data[$key]["status"]; ?></td>
+                        <td><?php switch ($data[$key]["status"]){
+                                case GameStatus::NOTSTARTED :
+                                    echo "Not started";
+                                    break;
+                                case GameStatus::STARTED :
+                                    echo "Started";
+                                    break;
+                                case GameStatus::FINISHEDWIN :
+                                    echo "Winner : ".$data[$key]["winner"];
+                                    break;
+                                case GameStatus::FINISHEDDRAW :
+                                    echo "Draw";
+                                    break;
+                                default:
+                                    break;
+                                } ?></td>
                         <td><?php echo $data[$key]["nb_player"]; ?></td>
                         <td><?php echo $data[$key]["current_player_turn"]; ?></td>
                         <td>

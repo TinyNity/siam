@@ -5,5 +5,7 @@ class GameStatus {
 
     const STARTED=1;
 
-    const FINISHED=2;
+    const FINISHEDWIN=2;
+
+    const FINISHEDDRAW=3;
 }

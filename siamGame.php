@@ -30,6 +30,7 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
         <input type="hidden" id="id_player" value="<?php echo $_SESSION["id_player"] ?>">
     </form>
     <div class="game-container">
+        <p>Current player turn : <span id='playerturn'>Waiting...</span></p>
         <div class="gameboard">
             <table class="board-container">
                 <?php
@@ -51,8 +52,11 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
                 <button id="endturn">End turn</button>
             </div>
         </div>
-        <div class="addpiece-container">
-            <img src id='addpiece-container'>
+        <div class="reservedpiece-container">
+            <div class="addpiece-container">
+                <img src id='addpiece-container'>
+            </div>
+            <p>Reserved piece : <span id='reservedpiece'>0</span></p>
         </div>
     </div>
 </body>
