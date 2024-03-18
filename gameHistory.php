@@ -91,7 +91,7 @@ if (isset ($_COOKIE["username"])) {
                 </table>
             </div>
             <div>
-                <p>Winrate : </p>
+                <p>Winrate : <?php echo (round($dbInterface->countWin($username)/count($data)*100,2))."%" ?></p>
             </div>
         </div>
     </div>

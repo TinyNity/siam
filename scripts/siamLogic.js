@@ -53,6 +53,7 @@ function sendPlayerData(targetPlayer){
     $.ajax({
         url:'php/updatePlayerData.php',
         type:"POST",
+        async:false,
         data : {
             id_player: targetPlayer.id,
             reserved_piece:targetPlayer.reservedPiece
@@ -557,6 +558,7 @@ class Siam {
         this.moveDone = false;
         this.pushDone = false;
         getGameboardData(this);
+        this.renderBoard();
     }
 
     rotateSelectedPiece() {
@@ -565,6 +567,20 @@ class Siam {
         }
         if (this.selectedCell != null && !this.pushDone) {
             this.selectedCell.rotate();
+            this.renderBoard();
+        }
+    }
+
+    removeSelectedPiece(){
+        if (this.status!=GameStatus.STARTED || this.playerTurn!=id_player){
+            return;
+        }
+        let row=this.selectedCell.row;
+        let column=this.selectedCell.column;
+        if (row==0 || row==BOARD_SIZE-1 || column==0|| column==BOARD_SIZE-1){
+            this.getPlayer().reservedPiece++;
+            this.gameboard[row][column]=this.selectedCell.void();
+            this.moveDone=true;
             this.renderBoard();
         }
     }
@@ -625,6 +641,12 @@ document.addEventListener("DOMContentLoaded", () => {
         game.rotateSelectedPiece();
     })
 
+    const removebutton=document.getElementById("removepiece");
+    removebutton.addEventListener('click',(e)=>{
+        e.preventDefault();
+        game.removeSelectedPiece();
+    })
+
     const endbutton = document.getElementById("endturn");
     endbutton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -632,7 +654,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     setInterval(function(){
-        if (game.playerTurn!=id_player){
+        if (game.playerTurn!=id_player && game.status==GameStatus.STARTED){
             getData();
         }
     },2000);

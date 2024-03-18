@@ -641,6 +641,16 @@ class DbInterface {
         return $ret;
     }
 
+    function countWin($username){
+        $games=$this->fetchGamesUser($username,GameStatus::FINISHEDDRAW,GameStatus::FINISHEDWIN);
+        $cpt=0;
+        for ($i=0;$i<count($games);$i++){
+            $player=$games[$i]["winner"];
+            if ($player!=null && $this->getUserFromPlayer($player)==$username) $cpt++;
+        }
+        return $cpt;
+    }
+
     function startGame($id_game){
         if (!$this->checkGameExistence($id_game)){
             error_log(EStatus::NOGAME);

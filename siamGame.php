@@ -64,6 +64,7 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
                 <button id="addpiece">Add piece to gameboard</button>
                 <button id="cancel">Cancel selection</button>
                 <button id="rotate">Rotate selected piece</button>
+                <button id="removepiece">Remove selected piece</button>
                 <button id="endturn">End turn</button>
             </div>
         </div>
