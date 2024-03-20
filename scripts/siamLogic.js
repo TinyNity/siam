@@ -591,6 +591,7 @@ class Siam {
             return;
         }
         if (this.selectedCell != null && !this.pushDone) {
+            this.moveDone=true;
             this.selectedCell.rotate();
             this.renderBoard();
         }
