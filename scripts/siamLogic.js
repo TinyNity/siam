@@ -586,7 +586,7 @@ class Siam {
     }
 
     endTurn(forceEnd=false) {
-        if ((this.status!=GameStatus.STARTED || this.playerTurn!=id_player) && (!forceEnd)){
+        if ((this.status!=GameStatus.STARTED || this.playerTurn!=id_player || !this.moveDone) && (!forceEnd)){
             return;
         }
         this.playerTurn=this.getOtherPlayer().id;
