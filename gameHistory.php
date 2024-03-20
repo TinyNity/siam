@@ -43,7 +43,7 @@ if (isset ($_COOKIE["username"])) {
             </select>
         </form>
     </div>
-    <h1>Siam</h1>
+    <h1>Siam - Game history</h1>
     <hr>
     <div id="content">
         <div id="container">
@@ -58,7 +58,6 @@ if (isset ($_COOKIE["username"])) {
                     <tr> 
                         <th>  ID  </th>
                         <th>Status</th>
-                    
                     </tr>
             
                 <?php foreach ($data as $key => $value): ?>
@@ -91,7 +90,7 @@ if (isset ($_COOKIE["username"])) {
                 </table>
             </div>
             <div>
-                <p>Winrate : <?php echo (round($dbInterface->countWin($username)/count($data)*100,2))."%" ?></p>
+                <p>Winrate : <?php echo (count($data) == 0)? "Play a game to have your winrate calculated !" : (round($dbInterface->countWin($username)/count($data)*100,2))."%" ?></p>
             </div>
         </div>
     </div>
