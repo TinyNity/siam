@@ -272,6 +272,7 @@ class Siam {
         this.moveDone = false;
         this.playerTurn = null;
         this.pushDone = false;
+        this.rotateDone= false;
         this.status = null;
         this.winner=null;
     }
@@ -433,7 +434,7 @@ class Siam {
             this.moveCell(currentCell);
             this.renderBoard();
         }
-        else if (this.selectedCell != null && currentCell.piece != Piece.VOID && this.selectedCell.canAccess(currentCell) && this.canPush(currentCell)) {
+        else if (this.selectedCell != null && currentCell.piece != Piece.VOID && !this.rotateDone && this.selectedCell.canAccess(currentCell) && this.canPush(currentCell)) {
             this.pushCell(currentCell);
             this.renderBoard();
         }
@@ -462,7 +463,7 @@ class Siam {
                 cancelbutton.style.display="inline";
             }
         }
-        endbutton.style.display=(this.moveDone)?("inline"):("none");
+        endbutton.style.display=(this.moveDone||this.rotateDone)?("inline"):("none");
     }
 
     checkWinner(rockCell,pushingDirection){
@@ -591,7 +592,7 @@ class Siam {
             return;
         }
         if (this.selectedCell != null && !this.pushDone) {
-            this.moveDone=true;
+            this.rotateDone=true;
             this.selectedCell.rotate();
             this.renderBoard();
         }
@@ -613,11 +614,12 @@ class Siam {
     }
 
     endTurn(forceEnd=false) {
-        if ((this.status!=GameStatus.STARTED || this.playerTurn!=id_player || !this.moveDone) && (!forceEnd)){
+        if ((this.status!=GameStatus.STARTED || this.playerTurn!=id_player || (!this.moveDone&& !this.rotateDone)) && (!forceEnd)){
             return;
         }
         this.playerTurn=this.getOtherPlayer().id;
         this.moveDone = false;
+        this.rotateDone=false;
         this.pushDone = false;
         this.selectedCell=null;
         sendGameboard(this);
