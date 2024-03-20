@@ -445,6 +445,14 @@ class Siam {
     }
 
     checkButtonVisibility(){
+        if (this.playerTurn!=id_player){
+            addbutton.style.display="none";
+            cancelbutton.style.display="none";
+            removebutton.style.display="none";
+            endbutton.style.display="none";
+            rotatebutton.style.display="none";
+            return;
+        }
         if (this.selectedCell!=null){
             addbutton.style.display="none";
             cancelbutton.style.display="inline";
@@ -580,6 +588,7 @@ class Siam {
         this.selectedCell = null;
         this.getPlayer().isAddingPiece = false;
         this.moveDone = false;
+        this.rotateDone=false;
         this.pushDone = false;
         getGameboardData(this);
         getGameData(this);
@@ -592,7 +601,7 @@ class Siam {
             return;
         }
         if (this.selectedCell != null && !this.pushDone) {
-            this.rotateDone=true;
+            this.rotateDone=(this.selectedCell.row!=undefined && this.selectedCell.column!=undefined);
             this.selectedCell.rotate();
             this.renderBoard();
         }
