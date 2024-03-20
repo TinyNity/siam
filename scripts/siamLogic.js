@@ -440,6 +440,29 @@ class Siam {
         if (this.status==GameStatus.FINISHEDWIN || this.status==GameStatus.FINISHEDDRAW){
             this.endTurn(true);
         }
+
+    }
+
+    checkButtonVisibility(){
+        if (this.selectedCell!=null){
+            addbutton.style.display="none";
+            cancelbutton.style.display="inline";
+            rotatebutton.style.display=(this.pushDone)?("none"):("inline");
+            if ((this.selectedCell.row==0 || this.selectedCell.row==BOARD_SIZE-1 ||this.selectedCell.column==0 || this.selectedCell.column==BOARD_SIZE-1) && !this.moveDone) removebutton.style.display="inline";
+            else removebutton.style.display="none";
+        }
+        else {
+            rotatebutton.style.display="none";
+            removebutton.style.display="none";
+            if (!this.moveDone){
+                addbutton.style.display= (this.getPlayer().reservedPiece>0)?("inline"):("none");
+                cancelbutton.style.display="none";
+            }
+            else {
+                cancelbutton.style.display="inline";
+            }
+        }
+        endbutton.style.display=(this.moveDone)?("inline"):("none");
     }
 
     checkWinner(rockCell,pushingDirection){
@@ -558,6 +581,8 @@ class Siam {
         this.moveDone = false;
         this.pushDone = false;
         getGameboardData(this);
+        getGameData(this);
+        getPlayerData(this);
         this.renderBoard();
     }
 
@@ -572,7 +597,7 @@ class Siam {
     }
 
     removeSelectedPiece(){
-        if (this.status!=GameStatus.STARTED || this.playerTurn!=id_player){
+        if (this.status!=GameStatus.STARTED || this.playerTurn!=id_player || this.moveDone){
             return;
         }
         let row=this.selectedCell.row;
@@ -581,6 +606,7 @@ class Siam {
             this.getPlayer().reservedPiece++;
             this.gameboard[row][column]=this.selectedCell.void();
             this.moveDone=true;
+            this.selectedCell=null
             this.renderBoard();
         }
     }
@@ -592,7 +618,7 @@ class Siam {
         this.playerTurn=this.getOtherPlayer().id;
         this.moveDone = false;
         this.pushDone = false;
-        this.selectedCell = null;
+        this.selectedCell=null;
         sendGameboard(this);
         sendGameStatus(this);
         for (let i=0;i<this.players.length;i++){
@@ -603,9 +629,11 @@ class Siam {
 }
 
 const game = new Siam();
-
-
-
+let cancelbutton;
+let removebutton;
+let rotatebutton;
+let addbutton;
+let endbutton;
 document.addEventListener("DOMContentLoaded", () => {
 
     function getData(){
@@ -615,42 +643,48 @@ document.addEventListener("DOMContentLoaded", () => {
         game.renderBoard();
     }
     getData();
-    const cells = document.querySelectorAll('.cell');
+    let cells = document.querySelectorAll('.cell');
 
     cells.forEach(cell => {
         cell.addEventListener('click', () => {
             game.movePiece(cell.getAttribute('data-row'), cell.getAttribute('data-col'));
+            game.checkButtonVisibility();
         });
     })
 
-    const addbutton = document.getElementById("addpiece");
+    addbutton = document.getElementById("addpiece");
     addbutton.addEventListener('click', (e) => {
         e.preventDefault();
         game.addPiece();
+        game.checkButtonVisibility();
     })
 
-    const cancelbutton = document.getElementById("cancel");
+    cancelbutton = document.getElementById("cancel");
     cancelbutton.addEventListener('click', (e) => {
         e.preventDefault();
         game.cancel();
+        game.checkButtonVisibility();
     })
 
-    const rotatebutton = document.getElementById("rotate");
+    rotatebutton = document.getElementById("rotate");
     rotatebutton.addEventListener('click', (e) => {
         e.preventDefault();
         game.rotateSelectedPiece();
+        game.checkButtonVisibility();
     })
 
-    const removebutton=document.getElementById("removepiece");
+    removebutton=document.getElementById("removepiece");
     removebutton.addEventListener('click',(e)=>{
         e.preventDefault();
         game.removeSelectedPiece();
+        game.checkButtonVisibility();
     })
 
-    const endbutton = document.getElementById("endturn");
+    endbutton = document.getElementById("endturn");
     endbutton.addEventListener('click', (e) => {
         e.preventDefault();
         game.endTurn();
+        game.checkButtonVisibility();
     })
 
     setInterval(function(){
@@ -658,5 +692,5 @@ document.addEventListener("DOMContentLoaded", () => {
             getData();
         }
     },2000);
-    
+    game.checkButtonVisibility();
 });
