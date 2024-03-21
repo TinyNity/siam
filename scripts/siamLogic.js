@@ -104,6 +104,18 @@ function sendGameboardCell(cell) {
     })
 }
 
+function clearPossibility(){
+    for (let i =0 ;i<BOARD_SIZE;i++){
+        for (let j=0;j<BOARD_SIZE;j++){
+            document.getElementById(`cell-${i}-${j}`).style.backgroundColor="";
+        }
+    }
+}
+
+function highlightCell(row,column){
+    document.getElementById(`cell-${row}-${column}`).style.backgroundColor="green";
+}
+
 function addNeighbors(file,cell,gameboard){
     let row=cell.row;
     let column=cell.column;
@@ -193,13 +205,7 @@ class Cell {
 
     //? Function to check if a cell can access another one (must be at a distance of 1 square)
     canAccess(cell) {
-        if (Math.abs(this.row - cell.row) == 1 && this.column - cell.column == 0) {
-            return true;
-        }
-        else if (Math.abs(this.column - cell.column) == 1 && this.row - cell.row == 0) {
-            return true;
-        }
-        return false;
+        return ((Math.abs(this.row - cell.row) == 1 && this.column - cell.column == 0) ||(Math.abs(this.column - cell.column) == 1 && this.row - cell.row == 0))        
     }
 
     //? Function to retrieve the direction of the vector to go from current cell to targeted cell
@@ -409,6 +415,33 @@ class Siam {
         }
     }
 
+    canAccessAndPush(cell){
+        if (cell.piece==Piece.VOID) return this.selectedCell.canAccess(cell);
+        else return (this.selectedCell.canAccess(cell) && this.canPush(cell));
+    }
+
+    highlightPosibility(){
+        if (this.moveDone){
+            clearPossibility();
+            return;
+        }
+        if (this.selectedCell.row==undefined && this.selectedCell.column==undefined){
+            for (let i=0;i<BOARD_SIZE;i++){
+                highlightCell(0,i);
+                highlightCell(BOARD_SIZE-1,i);
+                highlightCell(i,0);
+                highlightCell(i,BOARD_SIZE-1);
+            }
+            return;
+        }
+        let row=this.selectedCell.row;
+        let column=this.selectedCell.column;
+        if (row+1<BOARD_SIZE && this.canAccessAndPush(this.gameboard[row+1][column])) highlightCell(row+1,column)
+        if (row-1>=0 && this.canAccessAndPush(this.gameboard[row-1][column])) highlightCell(row-1,column)
+        if (column-1>=0 && this.canAccessAndPush(this.gameboard[row][column-1])) highlightCell(row,column-1) 
+        if (column+1<BOARD_SIZE && this.canAccessAndPush(this.gameboard[row][column+1])) highlightCell(row,column+1)
+    }
+
     //? Function to check if the requested move is possible
     movePiece(row, col) {
         if (this.moveDone == true || this.status != GameStatus.STARTED || this.playerTurn != id_player) {
@@ -429,6 +462,7 @@ class Siam {
         }
         else if (this.selectedCell == null && currentCell.piece != Piece.VOID) {
             this.selectedCell = currentCell;
+            
         }
         else if (this.selectedCell != null && currentCell.piece == Piece.VOID && this.selectedCell.canAccess(currentCell)) {
             this.moveCell(currentCell);
@@ -441,7 +475,7 @@ class Siam {
         if (this.status==GameStatus.FINISHEDWIN || this.status==GameStatus.FINISHEDDRAW){
             this.endTurn(true);
         }
-
+        this.highlightPosibility();
     }
 
     checkButtonVisibility(){
@@ -578,6 +612,7 @@ class Siam {
             player.isAddingPiece = true;
             this.selectedCell = new Cell(player.typePiece, Direction.DOWN, id_player, undefined, undefined);
             this.renderBoard();
+            this.highlightPosibility();
         }
     }
 
@@ -590,6 +625,7 @@ class Siam {
         this.moveDone = false;
         this.rotateDone=false;
         this.pushDone = false;
+        clearPossibility();
         getGameboardData(this);
         getGameData(this);
         getPlayerData(this);
@@ -620,6 +656,7 @@ class Siam {
             this.selectedCell=null
             this.renderBoard();
         }
+        clearPossibility();
     }
 
     endTurn(forceEnd=false) {
@@ -636,6 +673,7 @@ class Siam {
         for (let i=0;i<this.players.length;i++){
             sendPlayerData(this.players[i]);
         }
+        clearPossibility();
         this.renderTurn();
     }
 }
