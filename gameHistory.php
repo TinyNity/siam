@@ -38,7 +38,7 @@ if (isset ($_COOKIE["username"])) {
                 <option value="changePassword">Change Password</option>
                 <option value= "home">Home</option>
                 <option value="" disabled selected>
-                    <?php echo $username; ?>
+                    <?php echo $username; ?>                        
                 </option>
             </select>
         </form>
