@@ -83,7 +83,7 @@ if (isset ($_COOKIE["username"])) {
                                 } ?></td>
                         <td><?php echo $data[$key]["nb_player"]."/2"; ?></td>
                         <td>
-                            <form action="php/PLACEHOLDERjoinGame.php" method="post">
+                            <form action="php/joinGame.php" method="post">
                                 <input type="hidden" name="id_game" value="<?php echo $data[$key]["id"]; ?>">
                                 <input type="submit" value="Join" name="JoinForm">
                             </form>
@@ -117,7 +117,7 @@ if (isset ($_COOKIE["username"])) {
                                     echo $dbInterface->getUserFromPlayer($data[$key]["current_player_turn"]);
                                 } ?></td>
                         <td>
-                            <form action="php/PLACEHOLDERjoinGame.php" method="post">
+                            <form action="php/joinGame.php" method="post">
                                 <input type="hidden" name="id_game" value="<?php echo $data[$key]["id"]; ?>">
                                 <input type="submit" value="Join" name="JoinForm">
                             </form>

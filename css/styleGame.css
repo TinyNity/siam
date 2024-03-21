@@ -7,9 +7,57 @@ h1 {
     letter-spacing:3px;
 }
 
-div.game-container{
-    text-align: center;
+#container {
+    display:flex;
+    flex-wrap: wrap;
 }
+
+
+code {
+    margin: 0 10px 0 10px;
+    font-family: monospace;
+}
+
+.txt {
+    margin: 30px, auto, auto, auto;
+    text-align: justify;
+    font-size: 15pt;
+}
+
+.button {
+    width: 70%;
+    margin-left:15%;
+    margin-right:15%;
+    margin-top: 50px;
+    display: inline-block;
+    padding: 40px;
+    transition: all 50ms;
+    border-radius: 6px;
+    font-variant: small-caps;
+}
+
+#game-container{
+    margin-left: 2%;
+    text-align: center;
+    flex:6 0;
+}
+
+#tuto-header {
+    text-align: center;
+    color:rgb(165, 140, 219) ;
+}
+
+#tuto-container {
+    margin-left: 2%;
+
+    flex:3 0;
+}
+
+@media (max-width: 1500px) {
+    #game-container, #tuto-container {
+      flex: 1 0; 
+    }
+  }
 
 #dcButton {
     margin: 0px 10px 0 10px;

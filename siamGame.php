@@ -44,35 +44,47 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
     <form>
         <input type="hidden" id="id_player" value="<?php echo $_SESSION["id_player"] ?>">
     </form>
-    <div class="game-container">
-        <p>Current player turn : <span id='playerturn'>Waiting...</span></p>
-        <div class="gameboard">
-            <table class="board-container">
-                <?php
-                for ($i = 0; $i < BOARD_SIZE; $i++) {
-                    echo "<tr>";
-                    for ($j = 0; $j < BOARD_SIZE; $j++) {
-                        echo "<td id='cell-$i-$j' class='cell' data-row='$i' data-col='$j'>";
-                        echo "<img src id='image-$i-$j' class='piece'>";
-                        echo "</td>";
+    <div id="container">
+        <div id="game-container">
+            <p>Current player turn : <span id='playerturn'>Waiting...</span></p>
+            <div class="gameboard">
+                <table class="board-container">
+                    <?php
+                    for ($i = 0; $i < BOARD_SIZE; $i++) {
+                        echo "<tr>";
+                        for ($j = 0; $j < BOARD_SIZE; $j++) {
+                            echo "<td id='cell-$i-$j' class='cell' data-row='$i' data-col='$j'>";
+                            echo "<img src id='image-$i-$j' class='piece'>";
+                            echo "</td>";
+                        }
+                        echo "</tr>";
                     }
-                    echo "</tr>";
-                }
-                ?>
-            </table>
-            <div>
-                <button id="addpiece">Add piece to gameboard</button>
-                <button id="cancel">Cancel selection</button>
-                <button id="rotate">Rotate selected piece</button>
-                <button id="removepiece">Remove selected piece</button>
-                <button id="endturn">End turn</button>
+                    ?>
+                </table>
+                <div>
+                    <button class="button" id="addpiece">Add piece to gameboard</button>
+                    <button class="button" id="cancel">Cancel selection</button>
+                    <button class="button" id="rotate">Rotate selected piece</button>
+                    <button class="button" id="removepiece">Remove selected piece</button>
+                    <button id="endturn">End turn</button>
+                </div>
+            </div>
+            <div class="reservedpiece-container">
+                <div class="addpiece-container">
+                    <img src id='addpiece-container'>
+                </div>
+                <p>Reserved piece : <span id='reservedpiece'>0</span></p>
             </div>
         </div>
-        <div class="reservedpiece-container">
-            <div class="addpiece-container">
-                <img src id='addpiece-container'>
-            </div>
-            <p>Reserved piece : <span id='reservedpiece'>0</span></p>
+        <div id="tuto-container">
+            <h2 id="tuto-header">How to play ?</h3>
+            <hr>
+            <p class="txt">When it's your turn, it will say so at the top of the page. When that's the case, you can add a piece to the gameboard, or move a piece that already exists</p>
+            <p class="txt">You can place the piece directly on the board by clicking on it, or rotate it beforehand by clicking the <code>Rotate selected piece</code> button. </p>
+            <p class="txt">You can cancel your action by clicking the <code>Cancel selection</code> button.</p>
+            <p class="txt">You can remove a piece on the end of the board by clicking on it by clicking <code>Remove selected piece</code></p>
+            <p class="txt">When you're finished, end your turn by clicking on the <code>End turn</code> button</p>
+            <a class="button" href="https://www.educmat.fr/categories/jeux_reflexion/fiches_jeux/siam/index.php">Game rules</a>
         </div>
     </div>
 </body>

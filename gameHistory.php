@@ -80,7 +80,7 @@ if (isset ($_COOKIE["username"])) {
                                     break;
                                 } ?></td>
                         <td>
-                            <form action="php/PLACEHOLDERjoinGame.php" method="post">
+                            <form action="php/joinGame.php" method="post">
                                 <input type="hidden" name="id_game" value="<?php echo $data[$key]["id"]; ?>">
                                 <input type="submit" value="Look final state" name="JoinForm">
                             </form>
