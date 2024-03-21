@@ -86,7 +86,7 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
             <p class="txt">You can cancel your action by clicking the <code>Cancel selection</code> button.</p>
             <p class="txt">You can remove a piece on the end of the board by clicking on it by clicking <code>Remove selected piece</code></p>
             <p class="txt">When you're finished, end your turn by clicking on the <code>End turn</code> button</p>
-            <button class="button" href="https://www.educmat.fr/categories/jeux_reflexion/fiches_jeux/siam/index.php">game rules</button>
+            <button class="button" onclick="location.href = 'https://www.educmat.fr/categories/jeux_reflexion/fiches_jeux/siam/index.php';">game rules</button>
         </div>
     </div>
 </body>
