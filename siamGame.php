@@ -46,7 +46,9 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
     </form>
     <div id="container">
         <div id="game-container">
-            <p>Current player turn : <span id='playerturn'>Waiting...</span></p>
+            <p id="currPlayer">Current player turn : 
+                <span id='playerturn'>Waiting...</span></p>
+                <hr style="margin-top:43px; margin-bottom:60px;">
             <div class="gameboard">
                 <table class="board-container">
                     <?php
@@ -66,7 +68,7 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
                     <button class="button" id="cancel">Cancel selection</button>
                     <button class="button" id="rotate">Rotate selected piece</button>
                     <button class="button" id="removepiece">Remove selected piece</button>
-                    <button id="endturn">End turn</button>
+                    <button class="button" id="endturn">End turn</button>
                 </div>
             </div>
             <div class="reservedpiece-container">
@@ -84,7 +86,7 @@ if (!isset($_SESSION["id_game"]) || !isset($_SESSION["id_player"]) || !$dbInterf
             <p class="txt">You can cancel your action by clicking the <code>Cancel selection</code> button.</p>
             <p class="txt">You can remove a piece on the end of the board by clicking on it by clicking <code>Remove selected piece</code></p>
             <p class="txt">When you're finished, end your turn by clicking on the <code>End turn</code> button</p>
-            <a class="button" href="https://www.educmat.fr/categories/jeux_reflexion/fiches_jeux/siam/index.php">Game rules</a>
+            <button class="button" href="https://www.educmat.fr/categories/jeux_reflexion/fiches_jeux/siam/index.php">game rules</button>
         </div>
     </div>
 </body>

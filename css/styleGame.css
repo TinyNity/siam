@@ -25,39 +25,43 @@ code {
 }
 
 .button {
-    width: 70%;
-    margin-left:15%;
-    margin-right:15%;
-    margin-top: 50px;
+    margin:auto;
     display: inline-block;
-    padding: 40px;
-    transition: all 50ms;
+    padding: 8px;
     border-radius: 6px;
     font-variant: small-caps;
+    background-color: rgb(214, 181, 231);
 }
 
 #game-container{
     margin-left: 2%;
     text-align: center;
-    flex:6 0;
+    flex:7 0;
+}
+
+#currPlayer {
+    font-size: 22pt;
+    text-align: center;
+    color:rgb(165, 140, 219);
 }
 
 #tuto-header {
+    font-size: 28pt;
     text-align: center;
     color:rgb(165, 140, 219) ;
 }
 
 #tuto-container {
     margin-left: 2%;
-
-    flex:3 0;
+    margin-right: 50px;
+    flex:4 0;
 }
 
 @media (max-width: 1500px) {
     #game-container, #tuto-container {
       flex: 1 0; 
     }
-  }
+}
 
 #dcButton {
     margin: 0px 10px 0 10px;
@@ -128,6 +132,8 @@ div.addpiece-container{
 }
 
 div.reservedpiece-container{
+    margin: 15px;
+    padding:5px;
     display: inline-block;
     text-align: justify;
     align-items: center;
