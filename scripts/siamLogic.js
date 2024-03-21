@@ -702,6 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(function(){
         if (game.playerTurn!=id_player && game.status==GameStatus.STARTED){
             getData();
+            game.checkButtonVisibility();
         }
     },2000);
     game.checkButtonVisibility();
